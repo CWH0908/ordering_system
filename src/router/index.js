@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import sign from "../components/base/sign.vue"
 import main from "../components/base/main.vue"
-import home from "../components/base/home.vue"
+import home from "../components/home/home.vue"
 
 Vue.use(Router)
 

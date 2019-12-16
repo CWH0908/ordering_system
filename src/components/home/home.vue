@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import cheader from "../cheader/cheader";
-import navPart from "../navPart/navPart";
-import recommend from "../recommend/recommend";
+import cheader from "../home/cheader";
+import navPart from "../home/navPart";
+import recommend from "../home/recommend";
 export default {
   components: {
     cheader,

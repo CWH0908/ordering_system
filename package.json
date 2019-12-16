@@ -10,7 +10,9 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "axios": "D:\\webs\\��ѧweb\\webʵս��Ŀ\\��ҵ���>\"D:\\\\node.exe\"  \"D:\\\\node_modules\\npm\\bin\\npm-cli.js\" config get save-prefix \r\n^0.19.0",
     "element-ui": "D:\\webs\\��ѧweb\\webʵս��Ŀ\\��ҵ���>\"D:\\\\node.exe\"  \"D:\\\\node_modules\\npm\\bin\\npm-cli.js\" config get save-prefix \r\n^2.13.0",
+    "mongoose": "D:\\webs\\��ѧweb\\webʵս��Ŀ\\��ҵ���>\"D:\\\\node.exe\"  \"D:\\\\node_modules\\npm\\bin\\npm-cli.js\" config get save-prefix \r\n^5.8.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },

@@ -1,9 +1,7 @@
 <template>
   <div class="cheader">
     <div class="container">
-      <div class="welcome">
-        校园食堂订餐平台
-      </div>
+      <div class="welcome">校园食堂订餐平台</div>
       <el-autocomplete
         class="inline-input"
         clearable
@@ -83,21 +81,23 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.cheader{
-  
-  .container{
+.cheader {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+
+  .container {
     // height: 10vh;
     padding: 1rem 0;
     background-color: rgba(81, 81, 245, 1);
     text-align: center;
-    .welcome{
+    .welcome {
       font-size: 1.5rem;
       padding-bottom: 0.5rem;
       color: white;
     }
-    /deep/ .inline-input{
+    /deep/ .inline-input {
       width: 90%;
-      
     }
   }
 }

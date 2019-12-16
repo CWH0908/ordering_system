@@ -42,6 +42,7 @@ export default {};
   //   line-height: 5vh;
   padding: 1vh 1vh;
   border-top: 1px solid gray;
+  background-color: rgba(255, 255, 255, 1);
   .tabPart {
     display: flex;
     justify-content: space-around;
