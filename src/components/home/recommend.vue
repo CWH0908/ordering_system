@@ -4,69 +4,132 @@
 
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="综合排序" name="first">
-        <div class="sortType">
-          <ul>
-            <li class="itemLi" v-for="(item,index) in recommendList" :key="index">
-              <div class="itemDiv">
-                <!-- 店铺头像 -->
-                <aside>
-                  <img :src="item.pic_url" class="itemPic" />
-                </aside>
-                <div class="rightPart">
-                  <!-- 店铺名 -->
-                  <h1>{{item.shopName}}</h1>
-                  <!-- 店铺销量信息 -->
-                  <div class="selfInfo">
-                    <el-rate
-                      v-model="item.rateValue"
-                      disabled
-                      show-score
-                      text-color="#ff9900"
-                      score-template="{value}"
-                    ></el-rate>
-                    月售 {{item.saleTimes}} 单
-                  </div>
-                  <!-- 店铺基础费用，起送、配送费 -->
-                  <div class="baseFee">
-                    <span>￥{{item.startFee}}起送</span>
-                    <span class="fenge">&nbsp;|&nbsp;</span>
-                    <span>配送费 ￥{{item.sendFee}}</span>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
+        <shopList :shopList="sortList"></shopList>
       </el-tab-pane>
-      <el-tab-pane label="距离最近" name="second">距离最近</el-tab-pane>
-      <el-tab-pane label="销量排序" name="third">销量排序</el-tab-pane>
-      <el-tab-pane label="好评优先" name="fourth">好评优先</el-tab-pane>
+      <el-tab-pane label="销量排序" name="second">
+        <shopList :shopList="sortList"></shopList>
+      </el-tab-pane>
+      <el-tab-pane label="好评优先" name="third">
+        <shopList :shopList="sortList"></shopList>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
 import { getHomeRecommend } from "../../API/getHomeRecommend";
+import shopList from "../../components/home/shopList";
 export default {
   data() {
     return {
       activeName: "first", //初始选择板块
-      recommendList: []
+      requireAllShopList: [], //从API接口拿到的所有店铺数据
+      sortList: [] //默认综合排序的数据
     };
   },
-  created(){
+  created() {
     this._getHomeRecommend();
   },
   methods: {
     handleClick(tab, event) {
-      console.log(tab, event);
+      //切换排序类型
+      // console.log(tab, event);
     },
+    //API获取所有店铺数据
     async _getHomeRecommend() {
       await getHomeRecommend().then(res => {
         delete res[0]._id; //移除数据库自带的_id属性
-        this.recommendList = res[0];
+        let formatData = this.formatShopList(res[0]);
+        this.requireAllShopList = formatData;
+        // this.sortList = formatData;
       });
+    },
+    //将请求回来的数据进行格式化转换成所需格式
+    formatShopList(shopList) {
+      let newArr = [];
+      for (let item in shopList) {
+        newArr.push(shopList[item]);
+      }
+      return newArr;
+    },
+    //按排序方式将店铺数组进行排序
+    sortFunc(oldShopList, sortType) {
+      //快速排序，传入数据和排序方式
+      this.sortList = this.quickSort(oldShopList, sortType);
+    },
+
+    //快速排序
+    quickSort(arr, sortType) {
+      if (arr.length < 1) {
+        return arr;
+      }
+      var pivotIndex = Math.floor(arr.length / 2); //找到那个基准数
+      var tempValue = JSON.parse(JSON.stringify(arr[pivotIndex]));
+      var left = [];
+      var right = [];
+
+      //综合排序，比较麻烦，需要结合评价和销量进行判断然后排序
+      if (sortType == "multiple") {
+        let valueSum = JSON.parse(JSON.stringify(arr.splice(pivotIndex, 1)[0]));
+        var pivot = valueSum.saleTimes * 0.06 + valueSum.rateValue * 60; //取出基准数，并去除，splice返回值为数组。
+        for (var i = 0; i < arr.length; i++) {
+          let currentItem = JSON.parse(JSON.stringify(arr[i]));
+          if (currentItem.saleTimes * 0.06 + currentItem.rateValue * 60 > pivot) {
+            left.push(arr[i]);
+          } else {
+            right.push(arr[i]);
+          }
+        }
+      }
+      //评价排序
+      else if (sortType == "sales") {
+        var pivot = arr.splice(pivotIndex, 1)[0].saleTimes; //取出基准数，并去除，splice返回值为数组。
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i].saleTimes > pivot) {
+            left.push(arr[i]);
+          } else {
+            right.push(arr[i]);
+          }
+        }
+      }
+      //评价排序
+      else if (sortType == "comment") {
+        var pivot = arr.splice(pivotIndex, 1)[0].rateValue; //取出基准数，并去除，splice返回值为数组。
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i].rateValue > pivot) {
+            left.push(arr[i]);
+          } else {
+            right.push(arr[i]);
+          }
+        }
+      }
+      return this.quickSort(left, sortType).concat(
+        [tempValue],
+        this.quickSort(right, sortType)
+      ); //加入基准数
     }
+  },
+  watch: {
+    activeName(newVal) {
+      let _requireAllShopList = JSON.parse(
+        JSON.stringify(this.requireAllShopList)
+      ); //对象深拷贝
+      if (newVal == "first") {
+        this.sortFunc(_requireAllShopList, "multiple");
+      } else if (newVal == "second") {
+        this.sortFunc(_requireAllShopList, "sales");
+      } else if (newVal == "third") {
+        this.sortFunc(_requireAllShopList, "comment");
+      }
+    },
+    requireAllShopList(newVal) {
+      let _requireAllShopList = JSON.parse(JSON.stringify(newVal)); //对象深拷贝
+      //初始数据
+      this.sortFunc(_requireAllShopList, "multiple");
+    }
+  },
+  components: {
+    shopList
   }
 };
 </script>
@@ -80,7 +143,7 @@ export default {
     padding: 1rem 0;
   }
   /deep/ .el-tabs__nav-scroll {
-    padding-left: 1rem;
+    padding-left: 4rem;
   }
 
   //店铺板块
@@ -92,63 +155,6 @@ export default {
     top: 15vh;
     z-index: 999;
     background-color: rgba(255, 255, 255, 1);
-  }
-  //每个店铺的样式
-  /deep/ .sortType {
-    ul {
-      padding-bottom: 6vh;
-      .itemLi {
-        padding-left: 1rem;
-        margin-bottom: 1rem;
-        .itemDiv {
-          aside {
-            width: 20%;
-            display: inline-block;
-            .itemPic {
-              width: 100%;
-            }
-          }
-          .rightPart {
-            padding-left: 1rem;
-            display: inline-block;
-            color: gray;
-            h1 {
-              line-height: 2.5;
-              font-size: 1rem;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              color: #000;
-            }
-            .selfInfo {
-              font-size: 0.8rem;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-
-              /deep/ .el-rate {
-                display: inline-block;
-                margin-right: 0.2rem;
-                .el-rate__icon {
-                  font-size: 8px;
-                  margin-right: 2px;
-                }
-              }
-            }
-            .baseFee {
-              font-size: 0.8rem;
-              overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              .fenge {
-                color: rgba(0, 0, 0, 0.2);
-                font-size: 1rem;
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }
 </style>

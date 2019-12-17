@@ -19,7 +19,13 @@ import { getHomeNav } from "../../API/getHomeNav";
 export default {
   data() {
     return {
-      foodType: []
+      foodType: [],
+      // 大众菜式：Popular
+      // 粥粉面饭：Noodles
+      // 奶茶饮料：Drinks
+      // 爆香烧烤：Barbecue
+      // 汉堡披萨：Hamburger
+      // 水果甜品：Fruit
     };
   },
   created() {
