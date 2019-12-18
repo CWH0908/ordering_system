@@ -1,6 +1,6 @@
 <template>
   <div class="recommend">
-    <p class="hotMall">-畅销店铺-</p>
+    <p class="hotMall">-推荐店铺-</p>
 
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="综合排序" name="first">
@@ -19,12 +19,15 @@
 <script>
 import { getHomeRecommend } from "../../API/getHomeRecommend";
 import shopList from "../../components/home/shopList";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
       activeName: "first", //初始选择板块
       requireAllShopList: [], //从API接口拿到的所有店铺数据
-      sortList: [] //默认综合排序的数据
+      sortList: [], //默认综合排序的数据
+      differentTypeShopList: [], //根据所选，大众、饮料等不同类别，将所有数据进行一个按类型过滤
+      useWhichData: "all" //
     };
   },
   created() {
@@ -74,7 +77,10 @@ export default {
         var pivot = valueSum.saleTimes * 0.06 + valueSum.rateValue * 60; //取出基准数，并去除，splice返回值为数组。
         for (var i = 0; i < arr.length; i++) {
           let currentItem = JSON.parse(JSON.stringify(arr[i]));
-          if (currentItem.saleTimes * 0.06 + currentItem.rateValue * 60 > pivot) {
+          if (
+            currentItem.saleTimes * 0.06 + currentItem.rateValue * 60 >
+            pivot
+          ) {
             left.push(arr[i]);
           } else {
             right.push(arr[i]);
@@ -107,25 +113,118 @@ export default {
         [tempValue],
         this.quickSort(right, sortType)
       ); //加入基准数
+    },
+
+    //按照nav所选的店铺类型，进行排序，传入所有店铺数据进行过滤
+    filterShopType(allShopList, shopType) {
+      let newShopList = [];
+      for (let item in allShopList) {
+        if (allShopList[item].mallType == shopType) {
+          newShopList.push(allShopList[item]);
+        }
+      }
+      return newShopList;
     }
   },
+  computed: {
+    ...mapGetters(["home_nav_currentIndex"])
+  },
   watch: {
+    // 切换排序方式
     activeName(newVal) {
+      window.scrollTo(0, 0); //滚动条回到顶部
       let _requireAllShopList = JSON.parse(
         JSON.stringify(this.requireAllShopList)
       ); //对象深拷贝
-      if (newVal == "first") {
-        this.sortFunc(_requireAllShopList, "multiple");
-      } else if (newVal == "second") {
-        this.sortFunc(_requireAllShopList, "sales");
-      } else if (newVal == "third") {
-        this.sortFunc(_requireAllShopList, "comment");
+      let _differentTypeShopList = JSON.parse(
+        JSON.stringify(this.differentTypeShopList)
+      ); //对象深拷贝
+      //如果是没有选择home_nav 类型筛选的，显示所有店铺信息
+      if (this.home_nav_currentIndex == -1) {
+        if (newVal == "first") {
+          this.sortFunc(_requireAllShopList, "multiple");
+        } else if (newVal == "second") {
+          this.sortFunc(_requireAllShopList, "sales");
+        } else if (newVal == "third") {
+          this.sortFunc(_requireAllShopList, "comment");
+        }
+      } else {//使用筛选后的数据进行显示，并控制排序方式
+        if (newVal == "first") {
+          this.sortFunc(_differentTypeShopList, "multiple");
+        } else if (newVal == "second") {
+          this.sortFunc(_differentTypeShopList, "sales");
+        } else if (newVal == "third") {
+          this.sortFunc(_differentTypeShopList, "comment");
+        }
       }
     },
     requireAllShopList(newVal) {
       let _requireAllShopList = JSON.parse(JSON.stringify(newVal)); //对象深拷贝
       //初始数据
       this.sortFunc(_requireAllShopList, "multiple");
+    },
+    //home_nav 类别index
+    home_nav_currentIndex(newVal) {
+      //-1 表示没有选择类别，默认显示初始的所有数据
+      let allShopList = JSON.parse(JSON.stringify(this.requireAllShopList));
+      if (newVal == -1) {
+        this.differentTypeShopList = allShopList;
+      } else {
+        switch (newVal) {
+          case "0":
+            this.differentTypeShopList = this.filterShopType(
+              allShopList,
+              "Popular"
+            );
+            break;
+          case "1":
+            this.differentTypeShopList = this.filterShopType(
+              allShopList,
+              "Noodles"
+            );
+            break;
+          case "2":
+            this.differentTypeShopList = this.filterShopType(
+              allShopList,
+              "Drinks"
+            );
+            break;
+          case "3":
+            this.differentTypeShopList = this.filterShopType(
+              allShopList,
+              "Barbecue"
+            );
+            break;
+          case "4":
+            this.differentTypeShopList = this.filterShopType(
+              allShopList,
+              "Hamburger"
+            );
+            break;
+          case "5":
+            this.differentTypeShopList = this.filterShopType(
+              allShopList,
+              "Fruit"
+            );
+            break;
+          default:
+            break;
+        }
+
+        // 大众菜式：Popular    0
+        // 粥粉面饭：Noodles    1
+        // 奶茶饮料：Drinks     2
+        // 爆香烧烤：Barbecue   3
+        // 汉堡披萨：Hamburger  4
+        // 水果甜品：Fruit      5
+      }
+      //更新店铺信息后，重新渲染视图
+      // this.sortFunc(this.differentTypeShopList, "multiple");
+      this.sortList = JSON.parse(JSON.stringify(this.differentTypeShopList))
+    },
+    //更新店铺筛选后的信息，重新渲染sortList
+    differentTypeShopList(newVal){
+
     }
   },
   components: {
