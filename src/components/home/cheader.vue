@@ -5,9 +5,9 @@
       <el-autocomplete
         class="inline-input"
         clearable
-        v-model="state"
+        v-model="searchValue"
         :fetch-suggestions="querySearch"
-        placeholder="请输入内容"
+        placeholder="搜索美食~"
         @select="handleSelect"
       ></el-autocomplete>
     </div>
@@ -15,11 +15,13 @@
 </template>
 
 <script>
+import {mapMutations} from 'vuex';
 export default {
   data() {
     return {
-      state: "",
-      restaurants: []
+      searchValue: "",
+      restaurants: [],
+      lastTime:0,//用于节流函数计时器
     };
   },
   methods: {
@@ -71,11 +73,37 @@ export default {
       ];
     },
     handleSelect(item) {
-      console.log(item);
-    }
+      //点击搜索提示的回调函数
+      // console.log(item);
+    },
+    //节流函数
+    throttle(newVal, wait) {
+      var func = () => {
+        var currentTime = Date.now();
+        if (currentTime - this.lastTime > wait) {
+          //如果调用时间间隔大于定时器规定时间，执行函数
+          this.SearchShopInfo(newVal, this.searchValue); //搜索店铺信息
+          this.lastTime = currentTime; //重置上一次函数被调用时的时间
+        }
+      };
+      return func;
+    },
+    //搜索店铺信息
+    SearchShopInfo(newVal){
+      //存入vuex中
+      this.set_home_search_value(newVal);
+    },
+    ...mapMutations({
+      set_home_search_value:"set_home_search_value"
+    })
   },
   mounted() {
     this.restaurants = this.loadAll();
+  },
+  watch: {
+    searchValue(newVal) {
+      this.throttle(newVal,500)()
+    }
   }
 };
 </script>

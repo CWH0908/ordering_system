@@ -19,7 +19,7 @@
 <script>
 import { getHomeRecommend } from "../../API/getHomeRecommend";
 import shopList from "../../components/home/shopList";
-import { mapGetters } from "vuex";
+import { mapGetters,mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -44,6 +44,8 @@ export default {
         delete res[0]._id; //移除数据库自带的_id属性
         let formatData = this.formatShopList(res[0]);
         this.requireAllShopList = formatData;
+        //保存在vuex供其他组件使用
+        this.set_home_nav_requireAllShopList(formatData);
         // this.sortList = formatData;
       });
     },
@@ -124,7 +126,11 @@ export default {
         }
       }
       return newShopList;
-    }
+    },
+
+    ...mapMutations({
+      set_home_nav_requireAllShopList:"set_home_nav_requireAllShopList"
+    })
   },
   computed: {
     ...mapGetters(["home_nav_currentIndex"])
@@ -148,7 +154,8 @@ export default {
         } else if (newVal == "third") {
           this.sortFunc(_requireAllShopList, "comment");
         }
-      } else {//使用筛选后的数据进行显示，并控制排序方式
+      } else {
+        //使用筛选后的数据进行显示，并控制排序方式
         if (newVal == "first") {
           this.sortFunc(_differentTypeShopList, "multiple");
         } else if (newVal == "second") {
@@ -219,13 +226,18 @@ export default {
         // 水果甜品：Fruit      5
       }
       //更新店铺信息后，重新渲染视图
-      // this.sortFunc(this.differentTypeShopList, "multiple");
-      this.sortList = JSON.parse(JSON.stringify(this.differentTypeShopList))
+      // this.sortList = JSON.parse(JSON.stringify(this.differentTypeShopList));
+      let _differentTypeShopList = JSON.parse(
+        JSON.stringify(this.differentTypeShopList)
+      );
+      if (this.activeName == "first") {
+        this.sortFunc(_differentTypeShopList, "multiple");
+      } else if (this.activeName == "second") {
+        this.sortFunc(_differentTypeShopList, "sales");
+      } else if (this.activeName == "third") {
+        this.sortFunc(_differentTypeShopList, "comment");
+      }
     },
-    //更新店铺筛选后的信息，重新渲染sortList
-    differentTypeShopList(newVal){
-
-    }
   },
   components: {
     shopList

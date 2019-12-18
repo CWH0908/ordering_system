@@ -1,5 +1,11 @@
 # cwh毕业设计——校园食堂订餐系统
 
+# 	完成node使用mongoose连接mongoDB
+
+#   增加home_nav导航条选择店铺类别
+
+#   增加了搜索框模糊查找店铺并显示的功能
+
 # ordering_system
 
 > A Vue.js project
