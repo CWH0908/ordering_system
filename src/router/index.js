@@ -30,32 +30,45 @@ export default new Router({
         main
       },
       children: [{
-        path: 'home',
-        name: 'home',
-        components: {
-          home
+          path: 'home',
+          name: 'home',
+          components: {
+            home
+          },
+          children: [{
+            path: ':id',
+            name: 'foodList',
+            components: {
+              "foodList": (resolve) => {
+                require(['../components/base/foodList.vue'], resolve)
+              }
+            },
+          }]
         },
-      }, {
-        path: 'today',
-        name: 'today',
-        components: {
-          today: (resolve) => require(['../components/today/today.vue'], resolve)
+        {
+          path: 'today',
+          name: 'today',
+          components: {
+            today: (resolve) => require(['../components/today/today.vue'], resolve)
+          },
         },
-      }, {
-        path: 'order',
-        name: 'order',
-        components: {
-          order: (resolve) => require(['../components/order/order.vue'], resolve)
+        {
+          path: 'order',
+          name: 'order',
+          components: {
+            order: (resolve) => require(['../components/order/order.vue'], resolve)
+          },
         },
-      },{
-        path: 'person',
-        name: 'person',
-        components: {
-          person: (resolve) => require(['../components/person/person.vue'], resolve)
-        },
-      }]
+        {
+          path: 'person',
+          name: 'person',
+          components: {
+            person: (resolve) => require(['../components/person/person.vue'], resolve)
+          },
+        }
+      ]
     },
 
   ],
-  linkActiveClass:'mylinkClass'
+  linkActiveClass: 'mylinkClass'
 })

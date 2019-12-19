@@ -1,7 +1,7 @@
 <template>
   <div class="sortType">
     <ul>
-      <li class="itemLi" v-for="(item,index) in shopList" :key="index">
+      <li class="itemLi" v-for="(item,index) in shopList" :key="index" @click="selectShop(item)">
         <div class="itemDiv">
           <!-- 店铺头像 -->
           <aside>
@@ -31,15 +31,29 @@
         </div>
       </li>
     </ul>
+    <transition name="slide-left">
+      <router-view name="foodList"></router-view>
+    </transition>
   </div>
 </template>
 
 <script>
 export default {
-  props:{
-    shopList:{
-      type:Array,
-      default:()=>[]
+  props: {
+    shopList: {
+      type: Array,
+      default: () => []
+    }
+  },
+  methods: {
+    selectShop(item) {
+      // alert("选择了店铺ID："+item.shopID)
+      this.$router.push({
+        name: "foodList",
+        params: {
+          id: item.shopID
+        }
+      });
     }
   }
 };
@@ -103,5 +117,18 @@ export default {
       }
     }
   }
+}
+.slide-left-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.slide-left-enter-active {
+  transition: all 200ms;
+}
+
+.slide-left-leave-to {
+  opacity: 0;
+  transition: translateX(-100%);
 }
 </style>

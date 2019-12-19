@@ -1,11 +1,12 @@
 <template>
   <div class="main">
-    <router-view name="home"></router-view>
-    <router-view name="today"></router-view>
-    <router-view name="order"></router-view>
-    <router-view name="person"></router-view>
-
-    <!-- tab分类 -->
+    <transition name="slide-left">
+      <router-view name="home"></router-view>
+      <router-view name="today"></router-view>
+      <router-view name="order"></router-view>
+      <router-view name="person"></router-view>
+      <!-- tab分类 -->
+    </transition>
     <tab></tab>
   </div>
 </template>
@@ -19,5 +20,18 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less" scoped>
+.slide-left-enter {
+  opacity: 0;
+  // transform: translateX(100%);
+}
+
+.slide-left-enter-active {
+  transition: all 400ms;
+}
+
+.slide-left-leave-to {
+  opacity: 0;
+  // transition: translateX(-100%);
+}
 </style>

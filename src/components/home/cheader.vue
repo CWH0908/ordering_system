@@ -94,7 +94,8 @@ export default {
       this.set_home_search_value(newVal);
     },
     ...mapMutations({
-      set_home_search_value:"set_home_search_value"
+      set_home_search_value:"set_home_search_value",
+      set_home_nav_currentIndex:"set_home_nav_currentIndex"
     })
   },
   mounted() {

@@ -19,7 +19,7 @@
 <script>
 import { getHomeRecommend } from "../../API/getHomeRecommend";
 import shopList from "../../components/home/shopList";
-import { mapGetters,mapMutations } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -129,7 +129,7 @@ export default {
     },
 
     ...mapMutations({
-      set_home_nav_requireAllShopList:"set_home_nav_requireAllShopList"
+      set_home_nav_requireAllShopList: "set_home_nav_requireAllShopList"
     })
   },
   computed: {
@@ -237,7 +237,7 @@ export default {
       } else if (this.activeName == "third") {
         this.sortFunc(_differentTypeShopList, "comment");
       }
-    },
+    }
   },
   components: {
     shopList

@@ -1,31 +1,31 @@
 <template>
-  <div class="tab">
-    <div class="tabPart">
-      <router-link class="tabItem" tag="div" :to="{name:'home'}">
-        <i class="icon el-icon-tableware"></i>
-        <br />
-        <span class="home">首页</span>
-      </router-link>
+    <div class="tab">
+      <div class="tabPart">
+        <router-link class="tabItem" tag="div" :to="{name:'home'}">
+          <i class="icon el-icon-tableware"></i>
+          <br />
+          <span class="home">首页</span>
+        </router-link>
 
-      <router-link class="tabItem" tag="div" :to="{name:'today'}">
-        <i class="icon el-icon-thumb"></i>
-        <br />
-        <span class="today">今日</span>
-      </router-link>
+        <router-link class="tabItem" tag="div" :to="{name:'today'}">
+          <i class="icon el-icon-thumb"></i>
+          <br />
+          <span class="today">今日</span>
+        </router-link>
 
-      <router-link class="tabItem" tag="div" :to="{name:'order'}">
-        <i class="icon el-icon-tickets"></i>
-        <br />
-        <span class="person">订单</span>
-      </router-link>
+        <router-link class="tabItem" tag="div" :to="{name:'order'}">
+          <i class="icon el-icon-tickets"></i>
+          <br />
+          <span class="person">订单</span>
+        </router-link>
 
-      <router-link class="tabItem" tag="div" :to="{name:'person'}">
-        <i class="icon el-icon-user"></i>
-        <br />
-        <span class="person">个人</span>
-      </router-link>
+        <router-link class="tabItem" tag="div" :to="{name:'person'}">
+          <i class="icon el-icon-user"></i>
+          <br />
+          <span class="person">个人</span>
+        </router-link>
+      </div>
     </div>
-  </div>
 </template>
 
 <script>

@@ -6,6 +6,8 @@
 
 #   增加了搜索框模糊查找店铺并显示的功能
 
+#   准备完成点击店铺，进入，并查看菜品的界面
+
 # ordering_system
 
 > A Vue.js project

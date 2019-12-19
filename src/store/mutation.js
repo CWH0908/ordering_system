@@ -6,6 +6,8 @@ const mutations = {
   },
   set_home_search_value(state, home_search_value) {
     state.home_search_value = home_search_value;
+    //每次搜索店铺，将home_nav_currentIndex置为-1
+    state.home_nav_currentIndex = -1;
   },
   set_home_nav_requireAllShopList(state, home_nav_requireAllShopList) {
     state.home_nav_requireAllShopList = home_nav_requireAllShopList;
