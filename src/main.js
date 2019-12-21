@@ -12,6 +12,12 @@ import 'element-ui/lib/theme-chalk/index.css';
 
 import store from "./store"
 
+//引入vant
+import Vant from 'vant';
+import 'vant/lib/index.css';
+
+Vue.use(Vant);
+
 Vue.use(ElementUI);
 
 /* eslint-disable no-new */
