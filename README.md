@@ -10,6 +10,8 @@
 
 #   完成菜品item的UI设计，剩余点击加入购物车的计数器按钮
 
+#   加入计数器按钮，定位不对
+
 # ordering_system
 
 > A Vue.js project

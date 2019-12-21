@@ -39,9 +39,11 @@
             </van-swipe>
           </div>
         </div>
-        <div class="fooList">
+        <div class="allfoodList">
           <ul>
-            <li v-for="(item,index) in foodList" :key="index">{{item.foodName}}</li>
+            <li v-for="(item,index) in foodList" :key="index">
+              <foodItem :foodItem="item"></foodItem>
+            </li>
           </ul>
         </div>
       </div>
@@ -106,6 +108,9 @@ export default {
   z-index: 999;
   top: 0;
   left: 0;
+  //解决fixed定位不能滚动的问题
+  overflow-y: scroll;
+  overflow-x: hidden;
   .container {
     .goBackPart {
       position: fixed;
@@ -163,7 +168,16 @@ export default {
           }
         }
       }
-      .foodList {
+      .allfoodList {
+        li {
+          width: 100%;
+          height: 15vh;
+          box-sizing: border-box;
+          display: inline-block;
+          box-shadow: 2px 2px 1px #888888;
+          overflow: hidden;
+          margin-bottom: 1rem;
+        }
       }
     }
   }

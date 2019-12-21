@@ -1,11 +1,24 @@
 <template>
   <div class="foodItem">
     <img :src="foodItem.pic_url" />
-    <h1>{{foodItem.foodName}}</h1>
-    <h3>{{foodItem.foodInfo}}</h3>
-    <p>月售{{foodItem.saleTimes}}</p>
-    <div>
-      <span>￥{{foodItem.newMoney}}</span>
+    <div class="foodData">
+      <h1>{{foodItem.foodName}}</h1>
+      <div>
+        <span style="font-size:0.6rem;color:red;">￥</span>
+        <span class="foodPrice">{{foodItem.newMoney}}</span>
+        &nbsp;&nbsp;&nbsp;
+        <span class="saleTimes">月售{{foodItem.saleTimes}}</span>
+      </div>
+      <div>
+        <el-input-number
+          class="addCar"
+          v-model="buyNums"
+          size="mini"
+          @change="handleChange"
+          :min="0"
+          label="描述文字"
+        ></el-input-number>
+      </div>
     </div>
   </div>
 </template>
@@ -17,14 +30,70 @@ export default {
       type: Object,
       default: () => {}
     }
+  },
+  data() {
+    return {
+      buyNums: 0
+    };
+  },
+  methods: {
+    handleChange(value) {
+      console.log(value);
+    }
   }
 };
 </script>
 
 <style lang="less" scoped>
-    .foodItem{
-        img{
-            width: 100%;
-        }
+.foodItem {
+  position: relative;
+  text-align: left;
+  img {
+    width: 27vw;
+    display: block;
+    float: left;
+  }
+  .foodData {
+    padding: 0 0.8rem;
+    overflow: hidden;
+    h1 {
+      font-size: 0.8rem;
+      font-size: 1rem;
+      padding: 0.2rem 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+    .saleTimes {
+    //   position: absolute;
+      right: 0.6rem;
+      font-size: 0.6rem;
+      color: gray;
+      padding: 0.2rem 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .foodPrice {
+      color: red;
+      font-size: 1.2rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .addCar {
+      position: absolute;
+      bottom: 0.1rem;
+      left: 0;
+      transform: translateX(8%);
+    }
+    div /deep/ .el-input-number__decrease,
+    div /deep/.el-input-number--mini .el-input-number__increase {
+      font-size: 22px;
+      background: #6495ed !important;
+      color: white !important;
+      font-weight: 900;
+    }
+  }
+}
 </style>
