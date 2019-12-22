@@ -7,7 +7,9 @@
         </span>
       </div>
       <div class="header">
-        <img class="shopPic" :src="shopInfo.pic_url" />
+        <div>
+          <img class="shopPic" :src="shopInfo.pic_url" />
+        </div>
         <h1 class="shopName">{{shopInfo.shopName}}</h1>
         <div class="shopInfo">
           <span>评价：{{shopInfo.rateValue}} 分</span>
@@ -40,18 +42,10 @@
           </div>
         </div>
         <div class="allfoodList">
-          <!-- <ul>
-            <li v-for="(item,index) in groupFoodList" :key="index">
-              <van-index-bar :index-list="indexList" highlight-color="red">
-                <van-index-anchor index="10">{{groupFoodList[item]}}</van-index-anchor>
-                <van-cell>
-                  <foodItem :foodItem="groupFoodList[item]"></foodItem>
-                </van-cell>
-              </van-index-bar>
-            </li>
-          </ul>-->
+          <!-- vant索引栏 -->
           <van-index-bar
             class="indexBar"
+            :style="stickyHeight"
             :index-list="indexList"
             highlight-color="#6495ed"
             :sticky="false"
@@ -88,7 +82,8 @@ export default {
       foodList: [], //菜品信息列表
       recommendFoodList: [], //商家推荐菜品信息列表
       groupFoodList: {}, //按菜品类型进行分类存储
-      indexList: [] //菜品类型索引列表
+      indexList: [], //菜品类型索引列表
+      stickyHeight: "height:100vh" //粘性定位的元素高度，根据foodList数据动态获取
     };
   },
   methods: {
@@ -134,17 +129,13 @@ export default {
         }
       }
 
+      //得出菜品分组的key值
       for (let key in this.groupFoodList) {
         this.indexList.push(key);
       }
 
-      //   debugger;
-      //   for (let index0 in this.indexList) {
-      //     console.log("标题", this.indexList[index0]);
-      //     for (let item in this.groupFoodList[this.indexList[index0]]) {
-      //       console.log(this.groupFoodList[this.indexList[index0]][item]);
-      //     }
-      //   }
+      //得出粘性布局的高度,每个foodItem的高度设为17vh
+      this.stickyHeight = "height:" + newVal.length * 17 + "vh";
     }
   },
   components: {
@@ -178,8 +169,8 @@ export default {
         linear,
         0 0,
         0 100%,
-        from(rgba(255, 255, 255, 0)),
-        to(rgba(0, 0, 0, 0.2))
+        from(rgba(0, 0, 0, 0.4)),
+        to(rgba(255, 255, 255, 0))
       );
       span {
         font-size: 2rem;
@@ -235,17 +226,7 @@ export default {
       }
       .allfoodList {
         margin-top: 2rem;
-
-        li {
-          width: 100%;
-          height: 15vh;
-          box-sizing: border-box;
-          display: inline-block;
-          box-shadow: 2px 2px 1px #888888;
-          overflow: hidden;
-          margin-bottom: 1rem;
-        }
-
+        // vant索引栏
         .indexBar {
           height: 100vh;
           /deep/ .van-index-bar__sidebar {
@@ -266,6 +247,11 @@ export default {
           float: right;
           width: 80vw;
           padding: 0 16px;
+          /deep/ .van-index-anchor {
+            font-size: 1rem;
+            font-weight: 900;
+            color: red;
+          }
         }
       }
     }

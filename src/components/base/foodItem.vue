@@ -4,17 +4,18 @@
     <div class="foodData">
       <h1>{{foodItem.foodName}}</h1>
       <div>
-        <span class="saleTimes">主要原料：{{foodItem.foodInfo}}</span>
-        &nbsp;&nbsp;&nbsp;
+        <span class="saleTimes">{{foodItem.foodInfo}}</span>
         <span class="saleTimes">月售：{{foodItem.saleTimes}}</span>
       </div>
     </div>
     <div class="addPart">
       <span style="font-size:0.6rem;color:red;">￥</span>
       <span class="foodPrice">{{foodItem.newMoney}}</span>
+      &nbsp;&nbsp;&nbsp;
       <el-input-number
         class="addCar"
         v-model="buyNums"
+        data-foodID="foodItem.foodID"
         size="mini"
         @change="handleChange"
         :min="0"
@@ -34,7 +35,7 @@ export default {
   },
   data() {
     return {
-      buyNums: 0,
+      buyNums: 0
     };
   },
   methods: {
@@ -50,6 +51,7 @@ export default {
   position: relative;
   text-align: left;
   overflow: hidden;
+  height: 17vh;
   img {
     width: 27vw;
     display: block;
@@ -81,21 +83,30 @@ export default {
     padding: 0 0.8rem;
     .foodPrice {
       color: red;
-      font-size: 1.2rem;
+      font-size: 1rem;
+      width: 1rem;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     .addCar {
       position: absolute;
-      right: 0.5rem;
+      right: 0rem;
     }
     /deep/ .el-input-number__decrease,
     /deep/.el-input-number--mini .el-input-number__increase {
-      font-size: 22px;
+      font-size: 12px !important;
       background: #6495ed !important;
       color: white !important;
       font-weight: 900;
+    }
+    /deep/ .el-input--mini .el-input__inner {
+      height: 23px;
+      line-height: 23px;
+    }
+    /deep/.el-input-number--mini {
+      width: 100px;
+      line-height: 22px;
     }
   }
 }
