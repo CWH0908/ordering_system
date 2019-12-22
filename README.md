@@ -12,6 +12,8 @@
 
 #   加入计数器按钮，定位不对
 
+#   完成菜品页侧标导航条
+
 # ordering_system
 
 > A Vue.js project

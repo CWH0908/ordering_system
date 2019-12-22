@@ -4,21 +4,22 @@
     <div class="foodData">
       <h1>{{foodItem.foodName}}</h1>
       <div>
-        <span style="font-size:0.6rem;color:red;">￥</span>
-        <span class="foodPrice">{{foodItem.newMoney}}</span>
+        <span class="saleTimes">主要原料：{{foodItem.foodInfo}}</span>
         &nbsp;&nbsp;&nbsp;
-        <span class="saleTimes">月售{{foodItem.saleTimes}}</span>
+        <span class="saleTimes">月售：{{foodItem.saleTimes}}</span>
       </div>
-      <div>
-        <el-input-number
-          class="addCar"
-          v-model="buyNums"
-          size="mini"
-          @change="handleChange"
-          :min="0"
-          label="描述文字"
-        ></el-input-number>
-      </div>
+    </div>
+    <div class="addPart">
+      <span style="font-size:0.6rem;color:red;">￥</span>
+      <span class="foodPrice">{{foodItem.newMoney}}</span>
+      <el-input-number
+        class="addCar"
+        v-model="buyNums"
+        size="mini"
+        @change="handleChange"
+        :min="0"
+        label="描述文字"
+      ></el-input-number>
     </div>
   </div>
 </template>
@@ -33,7 +34,7 @@ export default {
   },
   data() {
     return {
-      buyNums: 0
+      buyNums: 0,
     };
   },
   methods: {
@@ -48,6 +49,7 @@ export default {
 .foodItem {
   position: relative;
   text-align: left;
+  overflow: hidden;
   img {
     width: 27vw;
     display: block;
@@ -65,7 +67,6 @@ export default {
       white-space: nowrap;
     }
     .saleTimes {
-    //   position: absolute;
       right: 0.6rem;
       font-size: 0.6rem;
       color: gray;
@@ -74,6 +75,10 @@ export default {
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+  }
+  .addPart {
+    overflow: hidden;
+    padding: 0 0.8rem;
     .foodPrice {
       color: red;
       font-size: 1.2rem;
@@ -83,12 +88,10 @@ export default {
     }
     .addCar {
       position: absolute;
-      bottom: 0.1rem;
-      left: 0;
-      transform: translateX(8%);
+      right: 0.5rem;
     }
-    div /deep/ .el-input-number__decrease,
-    div /deep/.el-input-number--mini .el-input-number__increase {
+    /deep/ .el-input-number__decrease,
+    /deep/.el-input-number--mini .el-input-number__increase {
       font-size: 22px;
       background: #6495ed !important;
       color: white !important;

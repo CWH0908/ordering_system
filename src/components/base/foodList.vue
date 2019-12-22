@@ -40,11 +40,31 @@
           </div>
         </div>
         <div class="allfoodList">
-          <ul>
-            <li v-for="(item,index) in foodList" :key="index">
-              <foodItem :foodItem="item"></foodItem>
+          <!-- <ul>
+            <li v-for="(item,index) in groupFoodList" :key="index">
+              <van-index-bar :index-list="indexList" highlight-color="red">
+                <van-index-anchor index="10">{{groupFoodList[item]}}</van-index-anchor>
+                <van-cell>
+                  <foodItem :foodItem="groupFoodList[item]"></foodItem>
+                </van-cell>
+              </van-index-bar>
             </li>
-          </ul>
+          </ul>-->
+          <van-index-bar
+            class="indexBar"
+            :index-list="indexList"
+            highlight-color="#6495ed"
+            :sticky="false"
+          >
+            <van-cell class="vantCell">
+              <div v-for="index0 in indexList" :key="index0">
+                <van-index-anchor :index="index0">{{index0}}</van-index-anchor>
+                <div v-for="(item,index1) in groupFoodList[index0]" :key="index1">
+                  <foodItem :foodItem="item"></foodItem>
+                </div>
+              </div>
+            </van-cell>
+          </van-index-bar>
         </div>
       </div>
     </div>
@@ -66,7 +86,9 @@ export default {
       shopID: "-1",
       shopInfo: "", //店铺信息
       foodList: [], //菜品信息列表
-      recommendFoodList: [] //商家推荐菜品信息列表
+      recommendFoodList: [], //商家推荐菜品信息列表
+      groupFoodList: {}, //按菜品类型进行分类存储
+      indexList: [] //菜品类型索引列表
     };
   },
   methods: {
@@ -84,12 +106,45 @@ export default {
   },
   watch: {
     foodList(newVal) {
-      //遍历foodList ， 将菜品对象的isRecommend属性为yes的加入 推荐菜品列表
+      //遍历foodList ，
       for (let item in newVal) {
+        //将菜品对象的isRecommend属性为yes的加入 推荐菜品列表
         if (newVal[item].isRecommend == "yes") {
           this.recommendFoodList.push(JSON.parse(JSON.stringify(newVal[item])));
         }
+        let foodType = JSON.parse(JSON.stringify(newVal[item])).foodType;
+        //菜品分组信息为空，直接插入
+        if (JSON.stringify(this.groupFoodList) == "{}") {
+          this.groupFoodList[foodType] = [
+            JSON.parse(JSON.stringify(newVal[item]))
+          ];
+        } else {
+          //将不同类型的菜品存入groupFoodList
+          //此菜品类型尚未添加分组
+          if (!this.groupFoodList[foodType]) {
+            this.groupFoodList[foodType] = [
+              JSON.parse(JSON.stringify(newVal[item]))
+            ];
+          } else {
+            //此菜品已在分组
+            this.groupFoodList[foodType].push(
+              JSON.parse(JSON.stringify(newVal[item]))
+            );
+          }
+        }
       }
+
+      for (let key in this.groupFoodList) {
+        this.indexList.push(key);
+      }
+
+      //   debugger;
+      //   for (let index0 in this.indexList) {
+      //     console.log("标题", this.indexList[index0]);
+      //     for (let item in this.groupFoodList[this.indexList[index0]]) {
+      //       console.log(this.groupFoodList[this.indexList[index0]][item]);
+      //     }
+      //   }
     }
   },
   components: {
@@ -116,6 +171,16 @@ export default {
       position: fixed;
       top: 0;
       height: 2vh;
+      width: 100%;
+      height: 6vh;
+      z-index: 9999;
+      background: -webkit-gradient(
+        linear,
+        0 0,
+        0 100%,
+        from(rgba(255, 255, 255, 0)),
+        to(rgba(0, 0, 0, 0.2))
+      );
       span {
         font-size: 2rem;
       }
@@ -169,6 +234,8 @@ export default {
         }
       }
       .allfoodList {
+        margin-top: 2rem;
+
         li {
           width: 100%;
           height: 15vh;
@@ -177,6 +244,28 @@ export default {
           box-shadow: 2px 2px 1px #888888;
           overflow: hidden;
           margin-bottom: 1rem;
+        }
+
+        .indexBar {
+          height: 100vh;
+          /deep/ .van-index-bar__sidebar {
+            position: sticky;
+            top: 6vh;
+            left: 0;
+            background-color: white;
+            color: black;
+            width: 24vw;
+            height: 0;
+            span {
+              padding: 0.5rem 0;
+              border: 1px solid gray;
+            }
+          }
+        }
+        .vantCell {
+          float: right;
+          width: 80vw;
+          padding: 0 16px;
         }
       }
     }
