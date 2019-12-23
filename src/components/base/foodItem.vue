@@ -15,7 +15,7 @@
       <el-input-number
         class="addCar"
         v-model="buyNums"
-        data-foodID="foodItem.foodID"
+        :data-foodid="foodItem.foodID"
         size="mini"
         @change="handleChange"
         :min="0"

@@ -15,6 +15,28 @@
 #   完成菜品页侧标导航条
 
 #   菜品页基础布局完成，准备计数器绑定数据（研究vuex绑定还是dom节点自定义属性方式），之后完成添加到购物车功能
+
+#   在获取店铺信息的同时在vuex仓库定义一个allShopCar对象，用于保存所有店铺的购物车信息，
+#   allShopCar:[
+#        {   
+#            shopID:'',
+#            shopCar:[
+#                {shopID:'',foodID:'',foodCount:'',foodPrice:""}
+#            ]
+#        },
+#        {
+#            shopID:'',
+#            shopCar:[
+#                {shopID:'',foodID:'',foodCount:'',foodPrice:""}
+#            ]
+#        }
+#    ]
+
+#   计数器按钮绑定添加购物车操作，购物车已存在菜品ID则进行数量变化即可，否则新插入菜品到购物车
+
+#   foodList组件下添加shopCar购物车组件，用于显示加入购物车的菜品数据，
+
+
 # ordering_system
 
 > A Vue.js project

@@ -79,6 +79,7 @@ export default {
     return {
       shopID: "-1",
       shopInfo: "", //店铺信息
+      allFoodList: [], //所有菜品信息列表（包含推荐和其他）
       foodList: [], //菜品信息列表
       recommendFoodList: [], //商家推荐菜品信息列表
       groupFoodList: {}, //按菜品类型进行分类存储
@@ -96,17 +97,24 @@ export default {
     },
     //请求该店铺的菜品信息
     async _getFoodList() {
-      this.foodList = await getHomeFoodList(this.shopID);
+      this.allFoodList = await getHomeFoodList(this.shopID);
     }
   },
   watch: {
-    foodList(newVal) {
+    allFoodList(newVal) {
       //遍历foodList ，
       for (let item in newVal) {
         //将菜品对象的isRecommend属性为yes的加入 推荐菜品列表
         if (newVal[item].isRecommend == "yes") {
           this.recommendFoodList.push(JSON.parse(JSON.stringify(newVal[item])));
+        } else {
+          //其他菜品
+          this.foodList.push(JSON.parse(JSON.stringify(newVal[item])));
         }
+      }
+    },
+    foodList(newVal) {
+      for (let item in newVal) {
         let foodType = JSON.parse(JSON.stringify(newVal[item])).foodType;
         //菜品分组信息为空，直接插入
         if (JSON.stringify(this.groupFoodList) == "{}") {
