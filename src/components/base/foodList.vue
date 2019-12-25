@@ -23,7 +23,7 @@
           <!-- 推荐列表长度小于3，使用普通div居中 -->
           <div style="text-align:center" v-if="recommendFoodList.length<3">
             <div class="recommendItem" v-for="(item,index) in recommendFoodList" :key="index">
-              <foodItemRecommend :foodItem="item"></foodItemRecommend>
+              <foodItemRecommend :foodItem="item" @selectFoodItem="selectFoodItem"></foodItemRecommend>
             </div>
           </div>
           <!-- 推荐列表长度大于3，使用轮播组件 -->
@@ -34,7 +34,7 @@
                 v-for="(item,index) in recommendFoodList"
                 :key="index"
               >
-                <foodItemRecommend :foodItem="item"></foodItemRecommend>
+                <foodItemRecommend :foodItem="item" @selectFoodItem="selectFoodItem"></foodItemRecommend>
               </van-swipe-item>
               <!-- 自定义指示器，设为空 -->
               <div class="custom-indicator" slot="indicator"></div>
@@ -54,7 +54,7 @@
               <div v-for="index0 in indexList" :key="index0">
                 <van-index-anchor :index="index0">{{index0}}</van-index-anchor>
                 <div v-for="(item,index1) in groupFoodList[index0]" :key="index1">
-                  <foodItem :foodItem="item"></foodItem>
+                  <foodItem :foodItem="item" @selectFoodItem="selectFoodItem"></foodItem>
                 </div>
               </div>
             </van-cell>
@@ -62,13 +62,16 @@
         </div>
       </div>
     </div>
+    <shopCar :shopInfo="shopInfo"></shopCar>
   </div>
 </template>
 
 <script>
 import { getHomeShoplist, getHomeFoodList } from "../../API/getHomeFoodList";
+import { mapMutations, mapGetters } from "vuex";
 import foodItemRecommend from "../base/foodItemRecommend";
 import foodItem from "../base/foodItem";
+import shopCar from "../base/shopCar";
 export default {
   created() {
     this.shopID = this.$route.params.id; //从路由参数中获取当前店铺ID，然后使用此ID请求该店铺下的菜品信息
@@ -78,7 +81,7 @@ export default {
   data() {
     return {
       shopID: "-1",
-      shopInfo: "", //店铺信息
+      shopInfo: {}, //店铺信息
       allFoodList: [], //所有菜品信息列表（包含推荐和其他）
       foodList: [], //菜品信息列表
       recommendFoodList: [], //商家推荐菜品信息列表
@@ -98,7 +101,62 @@ export default {
     //请求该店铺的菜品信息
     async _getFoodList() {
       this.allFoodList = await getHomeFoodList(this.shopID);
-    }
+    },
+    //选择菜品，接收菜品信息和数量
+    selectFoodItem(foodInfo, count) {
+    //   console.log("选择的菜品：", foodInfo);
+    //   console.log("数量", count);
+      //点击菜品修改数量后，根据 all_shop_car 里当前店铺的shopCar信息进行增删改操作
+      this.all_shop_car.forEach(shopItem => {
+        //修改当前店铺的购物车信息
+        if (shopItem.shopID == this.shopID) {
+          //当前店铺的购物车数组为空，直接插入新增数据
+          if (shopItem.shopCar.length == 0) {
+            let newObj = {};
+            newObj.shopID = this.shopID;
+            newObj.foodID = foodInfo.foodID;
+            newObj.foodCount = count; //菜品数量
+            newObj.foodPrice = foodInfo.newMoney; //菜品单价
+            shopItem.shopCar.push(newObj);
+            this.set_all_shop_car(this.all_shop_car); //保存到vuex
+          } else {
+            //当前修改的菜品信息在购物车数组中不存在，直接插入，如果已存在，修改该菜品下的数量即可
+            let isExit = false; //菜品已存在？，默认不存在
+            shopItem.shopCar.forEach(foodItem => {
+              if (foodItem.foodID == foodInfo.foodID) {
+                isExit = true;
+              }
+            });
+            //菜品不存在
+            if (!isExit) {
+              let newObj = {};
+              newObj.shopID = this.shopID;
+              newObj.foodID = foodInfo.foodID;
+              newObj.foodCount = count; //菜品数量
+              newObj.foodPrice = foodInfo.newMoney; //菜品单价
+              shopItem.shopCar.push(newObj);
+              this.set_all_shop_car(this.all_shop_car); //保存到vuex
+            } else {
+              //菜品已存在，修改数量
+              shopItem.shopCar.forEach(foodItem => {
+                if (foodItem.foodID == foodInfo.foodID) {
+                  foodItem.foodCount = count;
+                  this.set_all_shop_car(this.all_shop_car); //保存到vuex
+                }
+              });
+            }
+          }
+        }
+      });
+    },
+    //修改购物车信息(当前店铺)
+    ...mapMutations({
+      set_all_shop_car: "set_all_shop_car"
+    })
+  },
+  computed: {
+    //所有购物车信息，数组
+    ...mapGetters(["all_shop_car"])
   },
   watch: {
     allFoodList(newVal) {
@@ -148,7 +206,8 @@ export default {
   },
   components: {
     foodItemRecommend,
-    foodItem
+    foodItem,
+    shopCar
   }
 };
 </script>

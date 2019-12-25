@@ -10,3 +10,7 @@ export const home_search_value = (state) => {
 export const home_nav_requireAllShopList = (state) => {
   return state.home_nav_requireAllShopList
 };
+
+export const all_shop_car = (state)=>{
+  return state.all_shop_car;
+}

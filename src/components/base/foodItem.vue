@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     handleChange(value) {
-      console.log(value);
+      this.$emit("selectFoodItem",this.foodItem,value);//抛出数量改变的食品的信息，以及最新数量
     }
   }
 };

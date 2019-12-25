@@ -41,12 +41,23 @@ export default {
     //API获取所有店铺数据
     async _getHomeRecommend() {
       await getHomeRecommend().then(res => {
-        delete res[0]._id; //移除数据库自带的_id属性
-        let formatData = this.formatShopList(res[0]);
-        this.requireAllShopList = formatData;
+        // delete res[0]._id; //移除数据库自带的_id属性
+        // let formatData = this.formatShopList(res[0]);
+        // this.requireAllShopList = formatData;
+        this.requireAllShopList = res;
         //保存在vuex供其他组件使用
-        this.set_home_nav_requireAllShopList(formatData);
-        // this.sortList = formatData;
+        this.set_home_nav_requireAllShopList(res);
+
+        //获取所有店铺后，初始化所有店铺的购物车数据到vuex
+        //数据格式 all_shop_car : [  {"shopID":"", "shopCar":[{"shopID":"","foodID":"","foodCount":"","foodPrice":""}] }  ]
+        let newArr = [];
+        this.requireAllShopList.forEach(item => {
+          let newObj = {};
+          newObj.shopID = item.shopID;
+          newObj.shopCar = [];
+          newArr.push(newObj);
+        });
+        this.set_all_shop_car(newArr);
       });
     },
     //将请求回来的数据进行格式化转换成所需格式
@@ -129,7 +140,8 @@ export default {
     },
 
     ...mapMutations({
-      set_home_nav_requireAllShopList: "set_home_nav_requireAllShopList"
+      set_home_nav_requireAllShopList: "set_home_nav_requireAllShopList",
+      set_all_shop_car: "set_all_shop_car"
     })
   },
   computed: {
