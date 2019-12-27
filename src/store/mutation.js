@@ -15,6 +15,7 @@ const mutations = {
   //设置购物车数据
   set_all_shop_car(state, all_shop_car) {
     state.all_shop_car = all_shop_car;
+    // this.$set(state.all_shop_car, key, all_shop_car)
   }
 }
 

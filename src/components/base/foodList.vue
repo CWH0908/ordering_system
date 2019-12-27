@@ -104,8 +104,8 @@ export default {
     },
     //选择菜品，接收菜品信息和数量
     selectFoodItem(foodInfo, count) {
-    //   console.log("选择的菜品：", foodInfo);
-    //   console.log("数量", count);
+      //   console.log("选择的菜品：", foodInfo);
+      //   console.log("数量", count);
       //点击菜品修改数量后，根据 all_shop_car 里当前店铺的shopCar信息进行增删改操作
       this.all_shop_car.forEach(shopItem => {
         //修改当前店铺的购物车信息
@@ -117,7 +117,10 @@ export default {
             newObj.foodID = foodInfo.foodID;
             newObj.foodCount = count; //菜品数量
             newObj.foodPrice = foodInfo.newMoney; //菜品单价
+            let newArr = [newObj];
+            //$set插入数组才能触发更新
             shopItem.shopCar.push(newObj);
+            // this.$set(shopItem.shopCar,0,newArr)
             this.set_all_shop_car(this.all_shop_car); //保存到vuex
           } else {
             //当前修改的菜品信息在购物车数组中不存在，直接插入，如果已存在，修改该菜品下的数量即可
@@ -140,8 +143,19 @@ export default {
               //菜品已存在，修改数量
               shopItem.shopCar.forEach(foodItem => {
                 if (foodItem.foodID == foodInfo.foodID) {
-                  foodItem.foodCount = count;
-                  this.set_all_shop_car(this.all_shop_car); //保存到vuex
+                  //数量为0，删除购物车中该菜品
+                  if (count == 0) {
+                    //遍历购物车所有信息，删除指定foodID的数据
+                    for (let i in shopItem.shopCar) {
+                      if (shopItem.shopCar[i].foodID == foodItem.foodID) {
+                        shopItem.shopCar.splice(i, 1);
+                      }
+                    }
+                    this.set_all_shop_car(this.all_shop_car); //保存到vuex
+                  } else {
+                    foodItem.foodCount = count;
+                    this.set_all_shop_car(this.all_shop_car); //保存到vuex
+                  }
                 }
               });
             }

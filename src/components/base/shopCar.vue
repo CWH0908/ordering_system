@@ -1,15 +1,18 @@
 <template>
   <div class="shopCar">
-    <div class="icon">
+    <div class="icon" :style="showColor">
       <i class="el-icon-shopping-cart-2"></i>
     </div>
     <div class="currentMoney">
-      <div>{{currentMoney}}</div>
+      <div :style="showMoney">
+        <span v-if="currentMoney>shopInfo.startFee">￥</span>
+        {{currentMoney}}
+      </div>
       <div class="sendFee" v-if="shopInfo.sendFee">另需配送费{{shopInfo.sendFee}}元</div>
     </div>
     <div class="goSettlement">
-      <span v-if="shopInfo.startFee">￥{{shopInfo.startFee}}起送</span>
-      <el-button v-else type="success" disabled>去结算</el-button>
+      <span v-if="!isShowButton">￥{{shopInfo.startFee}}起送</span>
+      <el-button class="settlementButton" v-else type="success" @click="goSettlement">去结算</el-button>
     </div>
   </div>
 </template>
@@ -19,15 +22,10 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      currentMoney: "未选购商品",
-      currentShopCar: [] //当前购物车信息
+      isShowButton: false, //超过起送费，显示结算按钮
+      showMoney: "", //超过起送价后的一些样式变化
+      showColor:""
     };
-  },
-  mounted() {
-    this.$nextTick(function() {
-      console.log(this.shopInfo);
-      console.log(this.all_shop_car);
-    });
   },
   props: {
     shopInfo: {
@@ -35,27 +33,53 @@ export default {
       default: () => {} //商家信息，含配送费和起送价
     }
   },
+
   computed: {
-    ...mapGetters(["all_shop_car"])
-  },
-  watch: {
-    all_shop_car(newVal) {
-      console.log(this.shopInfo);
-      newVal.forEach(shopItem => {
-        if (shopItem.shopID == this.shopInfo.shopID) {
-          this.currentShopCar = shopItem.shopCar; //当前购物车信息
+    ...mapGetters(["all_shop_car"]),
+
+    currentShopCar() {
+      for (let shopItem in this.all_shop_car) {
+        if (this.all_shop_car[shopItem].shopID == this.shopInfo.shopID) {
+          return this.all_shop_car[shopItem].shopCar;
         }
-      });
-    },
-    currentShopCar(newVal) {
-      if (newVal.length == 0) {
-        this.currentMoney = "未选购商品";
-      } else {
-        newVal.forEach(foodItem => {
-          this.currentMoney =
-            this.currentMoney + foodItem.foodPrice * foodItem.foodCount;
-        });
       }
+    },
+
+    currentMoney() {
+      if (this.currentShopCar) {
+        if (this.currentShopCar.length == 0) {
+          this.showMoney = "";
+          this.showColor ="";
+          return "未选购商品";
+        } else {
+          let sum = 0;
+          this.currentShopCar.forEach(foodItem => {
+            sum += foodItem.foodPrice * foodItem.foodCount;
+          });
+
+          //超过起送价后的样式变化
+          this.showMoney = "color:white;";
+          this.showColor="color:#6495ED"
+          return sum.toFixed(2);
+        }
+      }
+    }
+  },
+
+  watch: {
+    currentMoney(newVal) {
+      //总金额超过起送费，允许结算
+      if (Number(newVal) > this.shopInfo.startFee) {
+        this.isShowButton = true;
+      } else {
+        this.isShowButton = false;
+      }
+    }
+  },
+
+  methods: {
+    goSettlement() {
+      alert("结算：￥" + this.currentMoney + "元");
     }
   }
 };
@@ -83,7 +107,7 @@ export default {
     line-height: 1.5;
     .sendFee {
       font-size: 0.6rem;
-      color: #e1ffff;
+      color: gray;
     }
   }
   .goSettlement {
@@ -91,6 +115,11 @@ export default {
     display: inline-block;
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.8);
+
+    .settlementButton {
+      float: right;
+      padding: 12px 20px;
+    }
   }
 }
 </style>
