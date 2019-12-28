@@ -14,7 +14,7 @@
       &nbsp;&nbsp;&nbsp;
       <el-input-number
         class="addCar"
-        v-model="buyNums"
+        v-model="currentBuyNums"
         :data-foodid="foodItem.foodID"
         size="mini"
         @change="handleChange"
@@ -26,21 +26,32 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   props: {
     foodItem: {
       type: Object,
       default: () => {}
+    },
+    buyNums: {
+      type: Number,
+      default: 0
     }
   },
   data() {
     return {
-      buyNums: 0
+      //转存父组件的传值，使用$emit实现父子组件的双向通信
+      currentBuyNums: this.buyNums
     };
+  },
+  computed: {
+    ...mapGetters(["all_shop_car"])
   },
   methods: {
     handleChange(value) {
-      this.$emit("selectFoodItem",this.foodItem,value);//抛出数量改变的食品的信息，以及最新数量
+      this.currentBuyNums = value;
+      //通知父组件selectType修改
+      this.$emit("selectFoodItem", this.foodItem, value); //抛出数量改变的食品的信息，以及最新数量
     }
   }
 };

@@ -34,7 +34,11 @@
                 v-for="(item,index) in recommendFoodList"
                 :key="index"
               >
-                <foodItemRecommend :foodItem="item" @selectFoodItem="selectFoodItem"></foodItemRecommend>
+                <foodItemRecommend
+                  :foodItem="item"
+                  @selectFoodItem="selectFoodItem"
+                  :buyNums="item|findFoodBuyNums"
+                ></foodItemRecommend>
               </van-swipe-item>
               <!-- 自定义指示器，设为空 -->
               <div class="custom-indicator" slot="indicator"></div>
@@ -54,7 +58,11 @@
               <div v-for="index0 in indexList" :key="index0">
                 <van-index-anchor :index="index0">{{index0}}</van-index-anchor>
                 <div v-for="(item,index1) in groupFoodList[index0]" :key="index1">
-                  <foodItem :foodItem="item" @selectFoodItem="selectFoodItem"></foodItem>
+                  <foodItem
+                    :foodItem="item"
+                    @selectFoodItem="selectFoodItem"
+                    :buyNums="item|findFoodBuyNums"
+                  ></foodItem>
                 </div>
               </div>
             </van-cell>
@@ -72,7 +80,12 @@ import { mapMutations, mapGetters } from "vuex";
 import foodItemRecommend from "../base/foodItemRecommend";
 import foodItem from "../base/foodItem";
 import shopCar from "../base/shopCar";
+let that; //全局this对象
 export default {
+  beforeCreate() {
+    //保存this，以供filters过滤器调用实例的数据
+    that = this;
+  },
   created() {
     this.shopID = this.$route.params.id; //从路由参数中获取当前店铺ID，然后使用此ID请求该店铺下的菜品信息
     this._getFoodList();
@@ -89,6 +102,26 @@ export default {
       indexList: [], //菜品类型索引列表
       stickyHeight: "height:100vh" //粘性定位的元素高度，根据foodList数据动态获取
     };
+  },
+  filters: {
+    //对传入的foodItem，返回其在购物车内的数量
+    findFoodBuyNums(foodItem) {
+      for (let i in that.all_shop_car) {
+        //首先找到店铺
+        debugger;
+        if (that.all_shop_car[i].shopID == that.shopID) {
+          if (that.all_shop_car[i].shopCar.length == 0) {
+            return 0;
+          } else {
+            for (let j in that.all_shop_car[i].shopCar) {
+              if (that.all_shop_car[i].shopCar[j].foodID == foodItem.foodID) {
+                return that.all_shop_car[i].shopCar[j].foodCount;
+              }
+            }
+          }
+        }
+      }
+    }
   },
   methods: {
     goBack() {
@@ -307,6 +340,8 @@ export default {
       }
       .allfoodList {
         margin-top: 2rem;
+
+        padding-bottom: 13rem;
         // vant索引栏
         .indexBar {
           height: 100vh;
