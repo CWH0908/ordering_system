@@ -1,5 +1,5 @@
 <template>
-  <div class="shopCar">
+  <div class="shopCar" @click="toggleShopCar">
     <div class="icon" :style="showColor">
       <i class="el-icon-shopping-cart-2"></i>
     </div>
@@ -24,7 +24,7 @@ export default {
     return {
       isShowButton: false, //超过起送费，显示结算按钮
       showMoney: "", //超过起送价后的一些样式变化
-      showColor:""
+      showColor: ""
     };
   },
   props: {
@@ -49,7 +49,7 @@ export default {
       if (this.currentShopCar) {
         if (this.currentShopCar.length == 0) {
           this.showMoney = "";
-          this.showColor ="";
+          this.showColor = "";
           return "未选购商品";
         } else {
           let sum = 0;
@@ -59,7 +59,7 @@ export default {
 
           //超过起送价后的样式变化
           this.showMoney = "color:white;";
-          this.showColor="color:#6495ED"
+          this.showColor = "color:#6495ED";
           return sum.toFixed(2);
         }
       }
@@ -80,6 +80,9 @@ export default {
   methods: {
     goSettlement() {
       alert("结算：￥" + this.currentMoney + "元");
+    },
+    toggleShopCar(){
+        this.$emit("toggleShopCar")
     }
   }
 };
@@ -89,6 +92,7 @@ export default {
 .shopCar {
   position: fixed;
   bottom: -1px;
+  height: 6.5vh;
   width: 100%;
   background-color: #2f4f4f;
   color: gray;

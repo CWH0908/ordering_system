@@ -70,7 +70,8 @@
         </div>
       </div>
     </div>
-    <shopCar :shopInfo="shopInfo"></shopCar>
+    <shopCar :shopInfo="shopInfo" @click.native="toggleShopCar"></shopCar>
+    <shopCarInfo v-if="isShowShopCarInfo" :shopID = "shopID"></shopCarInfo>
   </div>
 </template>
 
@@ -80,6 +81,7 @@ import { mapMutations, mapGetters } from "vuex";
 import foodItemRecommend from "../base/foodItemRecommend";
 import foodItem from "../base/foodItem";
 import shopCar from "../base/shopCar";
+import shopCarInfo from "../base/shopCarInfo";
 let that; //全局this对象
 export default {
   beforeCreate() {
@@ -100,7 +102,8 @@ export default {
       recommendFoodList: [], //商家推荐菜品信息列表
       groupFoodList: {}, //按菜品类型进行分类存储
       indexList: [], //菜品类型索引列表
-      stickyHeight: "height:100vh" //粘性定位的元素高度，根据foodList数据动态获取
+      stickyHeight: "height:100vh", //粘性定位的元素高度，根据foodList数据动态获取
+      isShowShopCarInfo: false //是否显示购物车详情组件
     };
   },
   filters: {
@@ -108,13 +111,13 @@ export default {
     findFoodBuyNums(foodItem) {
       for (let i in that.all_shop_car) {
         //首先找到店铺
-        debugger;
         if (that.all_shop_car[i].shopID == that.shopID) {
           if (that.all_shop_car[i].shopCar.length == 0) {
             return 0;
           } else {
             for (let j in that.all_shop_car[i].shopCar) {
               if (that.all_shop_car[i].shopCar[j].foodID == foodItem.foodID) {
+                //返回在vuex中的购物车计数器的值
                 return that.all_shop_car[i].shopCar[j].foodCount;
               }
             }
@@ -196,6 +199,10 @@ export default {
         }
       });
     },
+    //修改购物车详情显隐
+    toggleShopCar() {
+      this.isShowShopCarInfo = !this.isShowShopCarInfo;
+    },
     //修改购物车信息(当前店铺)
     ...mapMutations({
       set_all_shop_car: "set_all_shop_car"
@@ -254,7 +261,8 @@ export default {
   components: {
     foodItemRecommend,
     foodItem,
-    shopCar
+    shopCar,
+    shopCarInfo
   }
 };
 </script>
@@ -345,12 +353,15 @@ export default {
         // vant索引栏
         .indexBar {
           height: 100vh;
+          /deep/ .van-index-bar__index {
+            background-color: #e6e6fa;
+          }
           /deep/ .van-index-bar__sidebar {
             position: sticky;
             top: 6vh;
             left: 0;
-            background-color: white;
-            color: black;
+            background-color: #6495ed;
+            color: gray;
             width: 24vw;
             height: 0;
             span {
