@@ -25,22 +25,39 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   props: {
     foodItem: {
       type: Object,
       default: () => {}
-    },
-    buyNums: {
-      type: Number,
-      default: 0
     }
   },
-  data() {
-    return {
-      //转存父组件的传值，使用$emit实现父子组件的双向通信
-      currentBuyNums: this.buyNums
-    };
+  computed: {
+    ...mapGetters(["all_shop_car"]),
+    currentBuyNums: {
+      get() {
+        for (let i in this.all_shop_car) {
+          //首先找到店铺
+          if (this.all_shop_car[i].shopID == this.foodItem.shopID) {
+            if (this.all_shop_car[i].shopCar.length == 0) {
+              return 0;
+            } else {
+              for (let j in this.all_shop_car[i].shopCar) {
+                if (
+                  this.all_shop_car[i].shopCar[j].foodID == this.foodItem.foodID
+                ) {
+                  //返回在vuex中的购物车计数器的值
+                  return this.all_shop_car[i].shopCar[j].foodCount;
+                }
+              }
+              return 0;
+            }
+          }
+        }
+      },
+      set(value) {}
+    }
   },
   methods: {
     handleChange(value) {

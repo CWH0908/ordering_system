@@ -1,14 +1,19 @@
 <template>
   <div class="backgroundDIV">
     <div class="shopCarInfo">
-      <shopCarItem :shopCarFoodList="shopCarFoodList"></shopCarItem>
+      <ul>
+        <li>已选商品</li>
+        <li v-for="(item,index) in shopCarFoodList" :key="index">
+          <shopCarItem :shopCarFoodItem="item" @selectFoodItem="selectFoodItem"></shopCarItem>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
 import shopCarItem from "../base/shopCarItem";
-import { mapGetters } from "vuex";
+import { mapMutations, mapGetters } from "vuex";
 import { getHomeFoodList } from "../../API/getHomeFoodList";
 export default {
   props: {
@@ -31,10 +36,74 @@ export default {
     //请求该店铺的菜品信息
     async _getFoodList() {
       this.allFoodList = await getHomeFoodList(this.shopID);
-    }
+    },
+    //购物车详情修改菜品数量信息
+    selectFoodItem(foodInfo, count) {
+      //点击菜品修改数量后，根据 all_shop_car 里当前店铺的shopCar信息进行增删改操作
+      this.all_shop_car.forEach(shopItem => {
+        //修改当前店铺的购物车信息
+        // debugger;
+        if (shopItem.shopID == this.shopID) {
+          //当前店铺的购物车数组为空，直接插入新增数据
+          if (shopItem.shopCar.length == 0) {
+            let newObj = {};
+            newObj.shopID = this.shopID;
+            newObj.foodID = foodInfo.foodID;
+            newObj.foodCount = count; //菜品数量
+            newObj.foodPrice = foodInfo.newMoney; //菜品单价
+            let newArr = [newObj];
+            //$set插入数组才能触发更新
+            shopItem.shopCar.push(newObj);
+            // this.$set(shopItem.shopCar,0,newArr)
+            this.set_all_shop_car(this.all_shop_car); //保存到vuex
+          } else {
+            //当前修改的菜品信息在购物车数组中不存在，直接插入，如果已存在，修改该菜品下的数量即可
+            let isExit = false; //菜品已存在？，默认不存在
+            shopItem.shopCar.forEach(foodItem => {
+              if (foodItem.foodID == foodInfo.foodID) {
+                isExit = true;
+              }
+            });
+            //菜品不存在
+            if (!isExit) {
+              let newObj = {};
+              newObj.shopID = this.shopID;
+              newObj.foodID = foodInfo.foodID;
+              newObj.foodCount = count; //菜品数量
+              newObj.foodPrice = foodInfo.newMoney; //菜品单价
+              shopItem.shopCar.push(newObj);
+              this.set_all_shop_car(this.all_shop_car); //保存到vuex
+            } else {
+              //菜品已存在，修改数量
+              shopItem.shopCar.forEach(foodItem => {
+                if (foodItem.foodID == foodInfo.foodID) {
+                  //数量为0，删除购物车中该菜品
+                  if (count == 0) {
+                    //遍历购物车所有信息，删除指定foodID的数据
+                    for (let i in shopItem.shopCar) {
+                      if (shopItem.shopCar[i].foodID == foodItem.foodID) {
+                        shopItem.shopCar.splice(i, 1);
+                      }
+                    }
+                    this.set_all_shop_car(this.all_shop_car); //保存到vuex
+                  } else {
+                    foodItem.foodCount = count;
+                    this.set_all_shop_car(this.all_shop_car); //保存到vuex
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+    },
+    ...mapMutations({
+      set_all_shop_car: "set_all_shop_car"
+    })
   },
   computed: {
     ...mapGetters(["all_shop_car"]),
+    //整理购物车数据格式
     shopCarFoodList() {
       let newArr = [];
       for (let x in this.all_shop_car) {
@@ -84,5 +153,20 @@ export default {
   min-height: 5rem;
   max-height: 60vh;
   background-color: white;
+  ul {
+    li {
+      position: relative;
+      width: 100%;
+      padding: 0 1rem;
+      height: 3rem;
+      line-height: 3rem;
+      border-top: 1px solid gray;
+      box-sizing: border-box;
+    }
+    li:nth-child(1) {
+      background-color: #d8bfd8;
+      color: gray;
+    }
+  }
 }
 </style>

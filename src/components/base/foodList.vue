@@ -58,11 +58,8 @@
               <div v-for="index0 in indexList" :key="index0">
                 <van-index-anchor :index="index0">{{index0}}</van-index-anchor>
                 <div v-for="(item,index1) in groupFoodList[index0]" :key="index1">
-                  <foodItem
-                    :foodItem="item"
-                    @selectFoodItem="selectFoodItem"
-                    :buyNums="item|findFoodBuyNums"
-                  ></foodItem>
+                  <foodItem :foodItem="item" @selectFoodItem="selectFoodItem"></foodItem>
+                  <!-- :buyNums="item|findFoodBuyNums" -->
                 </div>
               </div>
             </van-cell>
@@ -71,7 +68,7 @@
       </div>
     </div>
     <shopCar :shopInfo="shopInfo" @click.native="toggleShopCar"></shopCar>
-    <shopCarInfo v-if="isShowShopCarInfo" :shopID = "shopID"></shopCarInfo>
+    <shopCarInfo v-if="isShowShopCarInfo" :shopID="shopID"></shopCarInfo>
   </div>
 </template>
 
@@ -109,21 +106,27 @@ export default {
   filters: {
     //对传入的foodItem，返回其在购物车内的数量
     findFoodBuyNums(foodItem) {
-      for (let i in that.all_shop_car) {
-        //首先找到店铺
-        if (that.all_shop_car[i].shopID == that.shopID) {
-          if (that.all_shop_car[i].shopCar.length == 0) {
-            return 0;
-          } else {
-            for (let j in that.all_shop_car[i].shopCar) {
-              if (that.all_shop_car[i].shopCar[j].foodID == foodItem.foodID) {
-                //返回在vuex中的购物车计数器的值
-                return that.all_shop_car[i].shopCar[j].foodCount;
+      //   console.log("打印all_shop_car@@@@@@@@@@@@@");
+      //   console.log(that.all_shop_car);
+      that.$nextTick(function() {
+        for (let i in that.all_shop_car) {
+          //首先找到店铺
+          if (that.all_shop_car[i].shopID == that.shopID) {
+            if (that.all_shop_car[i].shopCar.length == 0) {
+              return 0;
+            } else {
+              for (let j in that.all_shop_car[i].shopCar) {
+                if (that.all_shop_car[i].shopCar[j].foodID == foodItem.foodID) {
+                  //返回在vuex中的购物车计数器的值
+                  //   debugger;
+                  console.log(that.all_shop_car[i].shopCar[j].foodCount);
+                  return that.all_shop_car[i].shopCar[j].foodCount;
+                }
               }
             }
           }
         }
-      }
+      });
     }
   },
   methods: {
@@ -140,8 +143,6 @@ export default {
     },
     //选择菜品，接收菜品信息和数量
     selectFoodItem(foodInfo, count) {
-      //   console.log("选择的菜品：", foodInfo);
-      //   console.log("数量", count);
       //点击菜品修改数量后，根据 all_shop_car 里当前店铺的shopCar信息进行增删改操作
       this.all_shop_car.forEach(shopItem => {
         //修改当前店铺的购物车信息
@@ -256,6 +257,14 @@ export default {
 
       //得出粘性布局的高度,每个foodItem的高度设为17vh
       this.stickyHeight = "height:" + newVal.length * 17 + "vh";
+    },
+    groupFoodList(newVal) {
+      console.log(
+        "啊哈啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊",
+        this.all_shop_car
+      );
+      debugger;
+      return this.all_shop_car;
     }
   },
   components: {
