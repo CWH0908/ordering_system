@@ -34,11 +34,7 @@
                 v-for="(item,index) in recommendFoodList"
                 :key="index"
               >
-                <foodItemRecommend
-                  :foodItem="item"
-                  @selectFoodItem="selectFoodItem"
-                  :buyNums="item|findFoodBuyNums"
-                ></foodItemRecommend>
+                <foodItemRecommend :foodItem="item" @selectFoodItem="selectFoodItem"></foodItemRecommend>
               </van-swipe-item>
               <!-- 自定义指示器，设为空 -->
               <div class="custom-indicator" slot="indicator"></div>
@@ -67,8 +63,11 @@
         </div>
       </div>
     </div>
-    <shopCar :shopInfo="shopInfo" @click.native="toggleShopCar"></shopCar>
-    <shopCarInfo v-if="isShowShopCarInfo" :shopID="shopID"></shopCarInfo>
+    <shopCar :shopInfo="shopInfo" @click.native="toggleShopCar" @goSettlement="goSettlement"></shopCar>
+    <shopCarInfo v-show="isShowShopCarInfo" :shopID="shopID"></shopCarInfo>
+    <transition name="slide-left">
+      <router-view name="confirmOredr"></router-view>
+    </transition>
   </div>
 </template>
 
@@ -79,6 +78,7 @@ import foodItemRecommend from "../base/foodItemRecommend";
 import foodItem from "../base/foodItem";
 import shopCar from "../base/shopCar";
 import shopCarInfo from "../base/shopCarInfo";
+import corfirmOrder from "../base/corfirmOrder";
 let that; //全局this对象
 export default {
   beforeCreate() {
@@ -103,32 +103,31 @@ export default {
       isShowShopCarInfo: false //是否显示购物车详情组件
     };
   },
-  filters: {
-    //对传入的foodItem，返回其在购物车内的数量
-    findFoodBuyNums(foodItem) {
-      //   console.log("打印all_shop_car@@@@@@@@@@@@@");
-      //   console.log(that.all_shop_car);
-      that.$nextTick(function() {
-        for (let i in that.all_shop_car) {
-          //首先找到店铺
-          if (that.all_shop_car[i].shopID == that.shopID) {
-            if (that.all_shop_car[i].shopCar.length == 0) {
-              return 0;
-            } else {
-              for (let j in that.all_shop_car[i].shopCar) {
-                if (that.all_shop_car[i].shopCar[j].foodID == foodItem.foodID) {
-                  //返回在vuex中的购物车计数器的值
-                  //   debugger;
-                  console.log(that.all_shop_car[i].shopCar[j].foodCount);
-                  return that.all_shop_car[i].shopCar[j].foodCount;
-                }
-              }
-            }
-          }
-        }
-      });
-    }
-  },
+  //此filters方式已废弃
+  //   filters: {
+  //     //对传入的foodItem，返回其在购物车内的数量
+  //     findFoodBuyNums(foodItem) {
+  //       that.$nextTick(function() {
+  //         for (let i in that.all_shop_car) {
+  //           //首先找到店铺
+  //           if (that.all_shop_car[i].shopID == that.shopID) {
+  //             if (that.all_shop_car[i].shopCar.length == 0) {
+  //               return 0;
+  //             } else {
+  //               for (let j in that.all_shop_car[i].shopCar) {
+  //                 if (that.all_shop_car[i].shopCar[j].foodID == foodItem.foodID) {
+  //                   //返回在vuex中的购物车计数器的值
+  //                   //   debugger;
+  //                   console.log(that.all_shop_car[i].shopCar[j].foodCount);
+  //                   return that.all_shop_car[i].shopCar[j].foodCount;
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       });
+  //     }
+  //   },
   methods: {
     goBack() {
       this.$router.go(-1);
@@ -203,6 +202,30 @@ export default {
     //修改购物车详情显隐
     toggleShopCar() {
       this.isShowShopCarInfo = !this.isShowShopCarInfo;
+      if (this.isShowShopCarInfo) {
+        //显示购物车时，将foodList禁止滚动
+        document
+          .getElementsByClassName("foodList")[0]
+          .addEventListener("touchmove", this.preventDOM, {
+            passive: false
+          }); //passive 参数不能省略，用来兼容ios和android
+      } else {
+        document
+          .getElementsByClassName("foodList")[0]
+          .removeEventListener("touchmove", this.preventDOM, {
+            passive: false
+          }); //passive 参数不能省略，用来兼容ios和android
+      }
+    },
+    //阻止foodList组件页面滚动的函数
+    preventDOM(e) {
+      e.preventDefault();
+    },
+    //显示确认订单组件
+    goSettlement(currentMoney) {
+      this.$router.push({
+        name: "confirmOredr"
+      });
     },
     //修改购物车信息(当前店铺)
     ...mapMutations({
@@ -257,21 +280,14 @@ export default {
 
       //得出粘性布局的高度,每个foodItem的高度设为17vh
       this.stickyHeight = "height:" + newVal.length * 17 + "vh";
-    },
-    groupFoodList(newVal) {
-      console.log(
-        "啊哈啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊",
-        this.all_shop_car
-      );
-      debugger;
-      return this.all_shop_car;
     }
   },
   components: {
     foodItemRecommend,
     foodItem,
     shopCar,
-    shopCarInfo
+    shopCarInfo,
+    corfirmOrder
   }
 };
 </script>

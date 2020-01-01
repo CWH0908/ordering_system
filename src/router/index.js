@@ -43,6 +43,15 @@ export default new Router({
                 require(['../components/base/foodList.vue'], resolve)
               }
             },
+            children: [{
+              path: 'confirmOredr',
+              name: 'confirmOredr',
+              components: {
+                "confirmOredr": (resolve) => {
+                  require(['../components/base/corfirmOrder.vue'], resolve)
+                }
+              },
+            }]
           }]
         },
         {

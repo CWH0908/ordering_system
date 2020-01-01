@@ -16,9 +16,15 @@ import store from "./store"
 import Vant from 'vant';
 import 'vant/lib/index.css';
 
-import { IndexBar, IndexAnchor } from 'vant';
+import {
+  IndexBar,
+  IndexAnchor,
+  Overlay
+} from 'vant';
 
 Vue.use(IndexBar).use(IndexAnchor);
+
+Vue.use(Overlay);
 
 Vue.use(Vant);
 
@@ -28,7 +34,9 @@ Vue.use(ElementUI);
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>',
   store
 })

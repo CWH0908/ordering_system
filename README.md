@@ -44,6 +44,8 @@
 
 #   2019-12-29  完成购物车详情页的数据传入，待优化页面遮罩层和计数器位置，以及计数器双向更新到vuex
 
+#   2019-12-30  filters过滤数据改为computed的get()set()函数，完成计数器的双向更新
+
 # ordering_system
 
 > A Vue.js project

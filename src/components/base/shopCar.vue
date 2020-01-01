@@ -12,7 +12,7 @@
     </div>
     <div class="goSettlement">
       <span v-if="!isShowButton">￥{{shopInfo.startFee}}起送</span>
-      <el-button class="settlementButton" v-else type="success" @click="goSettlement">去结算</el-button>
+      <el-button class="settlementButton" v-else type="success" @click.stop="goSettlement">去结算</el-button>
     </div>
   </div>
 </template>
@@ -79,7 +79,8 @@ export default {
 
   methods: {
     goSettlement() {
-      alert("结算：￥" + this.currentMoney + "元");
+    //   alert("结算：￥" + this.currentMoney + "元");
+      this.$emit("goSettlement",this.currentMoney);
     },
     toggleShopCar(){
         this.$emit("toggleShopCar")

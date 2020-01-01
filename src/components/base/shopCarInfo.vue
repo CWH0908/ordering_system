@@ -2,10 +2,13 @@
   <div class="backgroundDIV">
     <div class="shopCarInfo">
       <ul>
-        <li>已选商品</li>
-        <li v-for="(item,index) in shopCarFoodList" :key="index">
-          <shopCarItem :shopCarFoodItem="item" @selectFoodItem="selectFoodItem"></shopCarItem>
-        </li>
+        <li class="text">已选商品</li>
+        <div v-if="shopCarFoodList.length>0">
+          <li v-for="(item,index) in shopCarFoodList" :key="index">
+            <shopCarItem :shopCarFoodItem="item" @selectFoodItem="selectFoodItem"></shopCarItem>
+          </li>
+        </div>
+        <div v-else class="nothing">空空如也~快去搜索美食吧~</div>
       </ul>
     </div>
   </div>
@@ -140,20 +143,28 @@ export default {
 <style lang="less" scoped>
 .backgroundDIV {
   z-index: 9999;
-  position: absolute;
+  position: fixed;
   top: 0;
-  height: 100vh;
+  height: 90vh;
   width: 100vw;
   background-color: rgba(0, 0, 0, 0.8);
 }
 .shopCarInfo {
   position: fixed;
-  bottom: 6.5vh;
+  bottom: 7.5vh;
   width: 100%;
   min-height: 5rem;
   max-height: 60vh;
+  overflow: auto;
   background-color: white;
   ul {
+    .text {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background-color: #d8bfd8;
+      color: gray;
+    }
     li {
       position: relative;
       width: 100%;
@@ -163,9 +174,9 @@ export default {
       border-top: 1px solid gray;
       box-sizing: border-box;
     }
-    li:nth-child(1) {
-      background-color: #d8bfd8;
+    .nothing {
       color: gray;
+      text-indent: 1rem;
     }
   }
 }
