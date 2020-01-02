@@ -32,9 +32,40 @@
       <div class="orderInfo">
         <van-panel :title="shopInfo.shopName">
           <ul>
-            <li v-for="(item,index) in currentShopCar" :key="index">{{item.foodData.foodName}}</li>
+            <li class="confirmOrderItem" v-for="(item,index) in currentShopCar" :key="index">
+              <div>
+                <img :src="item.foodData.pic_url" alt />
+                <span class="foodName">{{item.foodData.foodName}}</span>
+                <span class="foodCount">x {{item.foodCount}}</span>
+                <div class="newMoney">
+                  <span>￥</span>
+                  {{item.foodData.newMoney}}
+                </div>
+              </div>
+            </li>
+            <li class="sendPart">
+              <span class="sendInfo">配送费·蜂鸟专送</span>
+              <div class="sendFee">
+                <span>￥</span>
+                {{shopInfo.sendFee}}
+              </div>
+            </li>
+            <li class="sumPricePart">
+              <span class="emptySpan"></span>
+              <span class="text">小计</span>
+              <div class="sumPrice">
+                <span>￥</span>
+                <div>{{sumMoney}}</div>
+              </div>
+            </li>
           </ul>
         </van-panel>
+      </div>
+
+      <!-- 底部结算按钮 -->
+      <div class="settlement">
+        <span>￥{{sumMoney}}</span>
+        <el-button class="settlementButton" type="success" @click.stop="settlement">确认支付</el-button>
       </div>
     </div>
   </div>
@@ -68,6 +99,12 @@ export default {
     //请求店铺信息
     async _getShoplist() {
       this.shopInfo = await getHomeShoplist(this.shopID);
+    },
+    //结算按钮
+    settlement() {
+      alert("支付成功");
+      //跳转到订单组件
+      this.$router.push({ path: "/main/order" });
     }
   },
   computed: {
@@ -80,7 +117,25 @@ export default {
           newArr = shopItem.shopCar;
         }
       });
-      return newArr;
+      if (newArr.length == 0) {
+        //被刷新过页面，重新回到
+        this.$router.push({ path: `/main/home/${this.shopID}` });
+      } else {
+        return newArr;
+      }
+    },
+    sumMoney() {
+      //计算总金额
+      let sumMoney = 0;
+      this.all_shop_car.forEach(shopItem => {
+        if (shopItem.shopID == this.shopID) {
+          shopItem.shopCar.forEach(foodItem => {
+            let itemPrice = foodItem.foodData.newMoney * foodItem.foodCount;
+            sumMoney = (Number(sumMoney) + Number(itemPrice)).toFixed(2);
+          });
+        }
+      });
+      return sumMoney;
     }
   }
 };
@@ -135,6 +190,92 @@ export default {
       width: 90%;
       margin: 0 auto;
       margin-top: 1rem;
+      /deep/ .van-panel {
+        overflow: auto;
+        max-height: 61vh;
+        /deep/ .van-panel__header {
+          position: sticky;
+          top: 0;
+        }
+      }
+      ul {
+        padding: 1rem 0;
+        .confirmOrderItem {
+          padding: 0 1rem;
+          margin-bottom: 1rem;
+          img {
+            width: 10vw;
+            vertical-align: middle;
+          }
+          .foodName {
+            display: inline-block;
+            width: 40%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .foodCount {
+            display: inline-block;
+            width: 23%;
+          }
+          .newMoney {
+            display: inline-block;
+            width: 20%;
+          }
+        }
+        .sendPart {
+          padding: 0 1rem;
+          margin-bottom: 1rem;
+          .sendInfo {
+            display: inline-block;
+            width: 78%;
+          }
+          .sendFee {
+            span {
+              font-size: 0.8rem;
+            }
+            display: inline-block;
+            width: 20%;
+          }
+        }
+        .sumPricePart {
+          margin-top: 2rem;
+          .emptySpan {
+            display: inline-block;
+            width: 58%;
+          }
+          .text {
+            display: inline-block;
+          }
+          .sumPrice {
+            display: inline-block;
+            span {
+              font-size: 0.8rem;
+            }
+            div {
+              display: inline-block;
+              width: 4rem;
+              font-size: 1.2rem;
+            }
+          }
+        }
+      }
+    }
+    .settlement {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display: inline-block;
+      background-color: #2f4f4f;
+      span {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+      }
+      color: white;
+      .settlementButton {
+        float: right;
+        padding: 12px 20px;
+      }
     }
   }
 }

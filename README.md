@@ -46,6 +46,8 @@
 
 #   2019-12-30  filters过滤数据改为computed的get()set()函数，完成计数器的双向更新
 
+#   2020-1-2    完成确定订单页面的布局和数据显示，剩余 地址选择组件和地址编辑组件待完成）参考vant组件
+
 # ordering_system
 
 > A Vue.js project
