@@ -1,6 +1,7 @@
 <template>
   <div class="confirmOrder">
     <div class="container">
+      <!-- 头部返回 -->
       <header>
         <div class="goBackPart">
           <span @click="goBack">
@@ -10,29 +11,51 @@
         </div>
       </header>
 
+      <!-- 地址，支付 -->
       <div class="operation">
-        <el-collapse v-model="activeNames" @change="handleChange">
-          <el-collapse-item title="选择收货地址" name="1">
+        <van-collapse v-model="activeNames">
+          <van-collapse-item title="选择收货地址" name="1" :value="sendAddress">
             <div>地址一</div>
             <div>地址二</div>
             <div>地址三</div>
-          </el-collapse-item>
-          <el-collapse-item :title="'支付方式'+payRadio" name="2">
-            <el-radio v-model="payRadio" label="支付宝">支付宝</el-radio>
-            <el-radio v-model="payRadio" label="微信支付">微信支付</el-radio>
-          </el-collapse-item>
-        </el-collapse>
+          </van-collapse-item>
+          <van-collapse-item title="支付方式" name="2" :value="payRadio">
+            <van-radio-group v-model="payRadio">
+              <van-radio name="支付宝">支付宝</van-radio>
+              <van-radio name="微信支付">微信支付</van-radio>
+            </van-radio-group>
+          </van-collapse-item>
+        </van-collapse>
+      </div>
+
+      <!-- 订单信息 -->
+      <div class="orderInfo">
+        <van-panel :title="shopInfo.shopName">
+          <ul>
+            <li v-for="(item,index) in currentShopCar" :key="index">{{item.foodData.foodName}}</li>
+          </ul>
+        </van-panel>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { getHomeShoplist } from "../../API/getHomeFoodList";
+import { mapGetters } from "vuex";
+
 export default {
+  created() {
+    this.shopID = this.$route.params.id;
+    this._getShoplist();
+  },
   data() {
     return {
+      shopID: -1,
+      shopInfo: {}, //店铺信息
       activeNames: ["0"], //折叠面板
-      payRadio: "支付宝" //单选框支付方式
+      payRadio: "支付宝", //单选框支付方式
+      sendAddress: "" //配送地址
     };
   },
   methods: {
@@ -41,6 +64,23 @@ export default {
     },
     handleChange(val) {
       // console.log(val);
+    },
+    //请求店铺信息
+    async _getShoplist() {
+      this.shopInfo = await getHomeShoplist(this.shopID);
+    }
+  },
+  computed: {
+    ...mapGetters(["all_shop_car"]),
+    //当前店铺的购物车信息
+    currentShopCar() {
+      let newArr = [];
+      this.all_shop_car.forEach(shopItem => {
+        if (shopItem.shopID == this.shopID) {
+          newArr = shopItem.shopCar;
+        }
+      });
+      return newArr;
     }
   }
 };
@@ -87,12 +127,14 @@ export default {
       width: 90%;
       margin: 0 auto;
       //   margin-top: 6vh;
-      /deep/ .el-collapse {
-        text-indent: 1rem;
+      /deep/ .van-radio:nth-child(1) {
+        margin-bottom: 1rem;
       }
-      /deep/ .el-collapse-item__content {
-          padding: 10px 0;
-      }
+    }
+    .orderInfo {
+      width: 90%;
+      margin: 0 auto;
+      margin-top: 1rem;
     }
   }
 }

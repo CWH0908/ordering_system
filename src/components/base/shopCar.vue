@@ -54,7 +54,7 @@ export default {
         } else {
           let sum = 0;
           this.currentShopCar.forEach(foodItem => {
-            sum += foodItem.foodPrice * foodItem.foodCount;
+            sum += foodItem.foodData.newMoney * foodItem.foodCount;
           });
 
           //超过起送价后的样式变化

@@ -1,6 +1,6 @@
 <template>
   <div class="shopCarItem">
-    <div class="foodName">{{shopCarFoodItem.foodName}}</div>
+    <div class="foodName">{{shopCarFoodItem.foodData.foodName}}</div>
     <div class="foodSumPrice">
       <span>￥</span>
       {{shopCarFoodItem|getSumPrice}}
@@ -33,7 +33,7 @@ export default {
   },
   filters: {
     getSumPrice(shopCarFoodItem) {
-      return (shopCarFoodItem.foodCount * shopCarFoodItem.newMoney).toFixed(2);
+      return (shopCarFoodItem.foodCount * shopCarFoodItem.foodData.newMoney).toFixed(2);
     }
   }
 };

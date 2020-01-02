@@ -45,7 +45,8 @@ export default {
             } else {
               for (let j in this.all_shop_car[i].shopCar) {
                 if (
-                  this.all_shop_car[i].shopCar[j].foodID == this.foodItem.foodID
+                  this.all_shop_car[i].shopCar[j].foodData.foodID ==
+                  this.foodItem.foodID
                 ) {
                   //返回在vuex中的购物车计数器的值
                   return this.all_shop_car[i].shopCar[j].foodCount;

@@ -21,7 +21,7 @@
 #        {   
 #            shopID:'',
 #            shopCar:[
-#                {shopID:'',foodID:'',foodCount:'',foodPrice:""}
+#                {shopID:'',foodCount:'',  foodData:{foodID:'',foodName:"",pic_url:"",foodPrice:""}  }
 #            ]
 #        },
 #        {

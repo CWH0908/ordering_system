@@ -51,9 +51,8 @@ export default {
           if (shopItem.shopCar.length == 0) {
             let newObj = {};
             newObj.shopID = this.shopID;
-            newObj.foodID = foodInfo.foodID;
+            newObj.foodData = foodInfo;
             newObj.foodCount = count; //菜品数量
-            newObj.foodPrice = foodInfo.newMoney; //菜品单价
             let newArr = [newObj];
             //$set插入数组才能触发更新
             shopItem.shopCar.push(newObj);
@@ -63,28 +62,33 @@ export default {
             //当前修改的菜品信息在购物车数组中不存在，直接插入，如果已存在，修改该菜品下的数量即可
             let isExit = false; //菜品已存在？，默认不存在
             shopItem.shopCar.forEach(foodItem => {
-              if (foodItem.foodID == foodInfo.foodID) {
+              //   debugger;
+              if (foodItem.foodData.foodID == foodInfo.foodData.foodID) {
                 isExit = true;
               }
             });
             //菜品不存在
             if (!isExit) {
+              //   debugger;
               let newObj = {};
               newObj.shopID = this.shopID;
-              newObj.foodID = foodInfo.foodID;
+              newObj.foodData = foodInfo;
               newObj.foodCount = count; //菜品数量
-              newObj.foodPrice = foodInfo.newMoney; //菜品单价
               shopItem.shopCar.push(newObj);
               this.set_all_shop_car(this.all_shop_car); //保存到vuex
             } else {
               //菜品已存在，修改数量
               shopItem.shopCar.forEach(foodItem => {
-                if (foodItem.foodID == foodInfo.foodID) {
+                // debugger;
+                if (foodItem.foodData.foodID == foodInfo.foodData.foodID) {
                   //数量为0，删除购物车中该菜品
                   if (count == 0) {
                     //遍历购物车所有信息，删除指定foodID的数据
                     for (let i in shopItem.shopCar) {
-                      if (shopItem.shopCar[i].foodID == foodItem.foodID) {
+                      if (
+                        shopItem.shopCar[i].foodData.foodID ==
+                        foodItem.foodData.foodID
+                      ) {
                         shopItem.shopCar.splice(i, 1);
                       }
                     }
@@ -108,27 +112,35 @@ export default {
     ...mapGetters(["all_shop_car"]),
     //整理购物车数据格式
     shopCarFoodList() {
+      //为了完整的foodInfo信息，直接从数据库取得
+      //   let newArr = [];
+      //   for (let x in this.all_shop_car) {
+      //     if (this.all_shop_car[x].shopID == this.shopID) {
+      //       for (let y in this.all_shop_car[x].shopCar) {
+      //         let newObj = {};
+      //         newObj.shopID = this.shopID;
+      //         newObj.foodID = this.all_shop_car[x].shopCar[y].foodID;
+      //         //从 allFoodList 中查找
+      //         for (let z in this.allFoodList) {
+      //           if (
+      //             this.allFoodList[z].foodID ==
+      //             this.all_shop_car[x].shopCar[y].foodID
+      //           ) {
+      //             newObj.newMoney = this.allFoodList[z].newMoney; //单价
+      //             newObj.foodName = this.allFoodList[z].foodName; //菜品名称
+      //           }
+      //         }
+      //         newObj.foodCount = this.all_shop_car[x].shopCar[y].foodCount; //数量
+
+      //         newArr.push(newObj);
+      //       }
+      //     }
+      //   }
+      //   return newArr;
       let newArr = [];
       for (let x in this.all_shop_car) {
         if (this.all_shop_car[x].shopID == this.shopID) {
-          for (let y in this.all_shop_car[x].shopCar) {
-            let newObj = {};
-            newObj.shopID = this.shopID;
-            newObj.foodID = this.all_shop_car[x].shopCar[y].foodID;
-            //从 allFoodList 中查找
-            for (let z in this.allFoodList) {
-              if (
-                this.allFoodList[z].foodID ==
-                this.all_shop_car[x].shopCar[y].foodID
-              ) {
-                newObj.newMoney = this.allFoodList[z].newMoney; //单价
-                newObj.foodName = this.allFoodList[z].foodName; //菜品名称
-              }
-            }
-            newObj.foodCount = this.all_shop_car[x].shopCar[y].foodCount; //数量
-
-            newArr.push(newObj);
-          }
+          newArr = this.all_shop_car[x].shopCar;
         }
       }
       return newArr;

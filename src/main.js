@@ -19,15 +19,22 @@ import 'vant/lib/index.css';
 import {
   IndexBar,
   IndexAnchor,
-  Overlay
+  Overlay,
+  RadioGroup,
+  Radio,
+  Collapse,
+  CollapseItem,Panel 
 } from 'vant';
 
 Vue.use(IndexBar).use(IndexAnchor);
-
 Vue.use(Overlay);
-
+Vue.use(RadioGroup);
+Vue.use(Radio);
+Vue.use(Collapse).use(CollapseItem);
+Vue.use(Panel);
 Vue.use(Vant);
 
+//引入element
 Vue.use(ElementUI);
 
 /* eslint-disable no-new */
