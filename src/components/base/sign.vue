@@ -24,8 +24,12 @@
         ></el-input>
         <div class="opration">
           <span class="forgetButon">忘记密码</span>
-          <el-button class="sign-up-button" type="success" plain>注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</el-button>
-          <el-button class="sign-in-button" type="primary">登&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;录</el-button>
+          <el-button class="sign-up-button" type="primary">注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</el-button>
+          <el-button
+            class="sign-in-button"
+            type="primary"
+            @click="userLogin"
+          >登&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;录</el-button>
         </div>
       </div>
     </transition>
@@ -33,12 +37,33 @@
 </template>
 
 <script>
+import { login } from "../../API/checkUser";
 export default {
   data() {
     return {
       inputAccount: "", //账号
-      inputPwd: "" //密码
+      inputPwd: "", //密码
+      userData: [] //用于存储从数据库查询回来的用户信息(包括账号、密码、地址信息数组、订单信息数组)
     };
+  },
+  methods: {
+    userLogin() {
+      this._userLogin();
+    },
+    async _userLogin() {
+      if (this.inputAccount != "" && this.inputPwd != "") {
+        let temp = await login(this.inputAccount, this.inputPwd);
+        if (temp) {
+          this.userData = temp;
+          localStorage.setItem("currentUser", JSON.stringify(temp)); //在本地设置当前用户信息(序列化后存储)
+          this.$router.push({ path: "/main/home" });
+        } else {
+          alert("账号密码错误");
+        }
+      } else {
+        alert("请输入账号密码");
+      }
+    }
   }
 };
 </script>
