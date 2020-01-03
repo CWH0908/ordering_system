@@ -23,8 +23,12 @@
           clearable
         ></el-input>
         <div class="opration">
-          <span class="forgetButon">忘记密码</span>
-          <el-button class="sign-up-button" type="primary">注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</el-button>
+          <!-- <span class="forgetButon">忘记密码</span> -->
+          <el-button
+            class="sign-up-button"
+            type="primary"
+            @click="userRegister"
+          >注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册</el-button>
           <el-button
             class="sign-in-button"
             type="primary"
@@ -37,7 +41,8 @@
 </template>
 
 <script>
-import { login } from "../../API/checkUser";
+import { login, register, inputRegister } from "../../API/checkUser";
+import { Toast } from "vant";
 export default {
   data() {
     return {
@@ -47,6 +52,7 @@ export default {
     };
   },
   methods: {
+    //用户登录
     userLogin() {
       this._userLogin();
     },
@@ -56,12 +62,50 @@ export default {
         if (temp) {
           this.userData = temp;
           localStorage.setItem("currentUser", JSON.stringify(temp)); //在本地设置当前用户信息(序列化后存储)
-          this.$router.push({ path: "/main/home" });
+          const toast = Toast.loading({
+            duration: 0, // 持续展示 toast
+            forbidClick: true,
+            message: "正在登录 3 秒"
+          });
+
+          let second = 3;
+          const timer = setInterval(() => {
+            second--;
+            if (second) {
+              toast.message = `正在登录 ${second} 秒`;
+            } else {
+              clearInterval(timer);
+              // 手动清除 Toast
+              Toast.clear();
+            }
+          }, 1000);
+          const routerTimer = setTimeout(() => {
+            this.$router.push({ path: "/main/home" });
+          }, 3000);
         } else {
-          alert("账号密码错误");
+          Toast("账号密码错误");
         }
       } else {
-        alert("请输入账号密码");
+        Toast("请输入账号密码");
+      }
+    },
+
+    //用户注册
+    userRegister() {
+      this._userRegister();
+    },
+    async _userRegister() {
+      if (this.inputAccount != "" && this.inputPwd != "") {
+        let temp = await register(this.inputAccount);
+        if (temp) {
+          Toast("该账号已注册");
+        } else {
+          //写入注册的账号密码到数据库
+          Toast("注册成功");
+          await inputRegister(this.inputAccount, this.inputPwd);
+        }
+      } else {
+        Toast("请完善账号密码");
       }
     }
   }
@@ -114,6 +158,7 @@ export default {
       display: inline-block;
       text-align: center;
       border-radius: 20px;
+      margin-right: 6.8rem;
     }
     .sign-in-button {
       // width: 82vw;

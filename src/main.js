@@ -23,7 +23,9 @@ import {
   RadioGroup,
   Radio,
   Collapse,
-  CollapseItem,Panel 
+  CollapseItem,
+  Panel,
+  Toast
 } from 'vant';
 
 Vue.use(IndexBar).use(IndexAnchor);
@@ -32,6 +34,7 @@ Vue.use(RadioGroup);
 Vue.use(Radio);
 Vue.use(Collapse).use(CollapseItem);
 Vue.use(Panel);
+Vue.use(Toast);
 Vue.use(Vant);
 
 //引入element
