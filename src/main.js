@@ -16,29 +16,34 @@ import store from "./store"
 import Vant from 'vant';
 import 'vant/lib/index.css';
 
-import {
-  IndexBar,
-  IndexAnchor,
-  Overlay,
-  RadioGroup,
-  Radio,
-  Collapse,
-  CollapseItem,
-  Panel,
-  Button,
-  AddressList,
-  AddressEdit
-} from 'vant';
+// import {
+//   IndexBar,
+//   IndexAnchor,
+//   Overlay,
+//   RadioGroup,
+//   Radio,
+//   Collapse,
+//   CollapseItem,
+//   Panel,
+//   Button,
+//   AddressList,
+//   AddressEdit,
+//   Area,
+//   Popup
+// } from 'vant';
 
-Vue.use(IndexBar).use(IndexAnchor);
-Vue.use(Overlay);
-Vue.use(RadioGroup);
-Vue.use(Radio);
-Vue.use(Collapse).use(CollapseItem);
-Vue.use(Panel);
-Vue.use(Button).use(AddressList)
-Vue.use(AddressEdit)
+// Vue.use(IndexBar).use(IndexAnchor);
+// Vue.use(Overlay);
+// Vue.use(RadioGroup);
+// Vue.use(Radio);
+// Vue.use(Collapse).use(CollapseItem);
+// Vue.use(Panel);
+// Vue.use(AddressList)
+// Vue.use(AddressEdit)
+// Vue.use(Area)
+// Vue.use(Popup)
 Vue.use(Vant);
+
 
 //引入element
 Vue.use(ElementUI);

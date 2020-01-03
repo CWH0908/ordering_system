@@ -1,7 +1,10 @@
 <template>
-  <div class="addressEdit">
+  <div>
+    <van-area :area-list="areaList" />
+
     <van-address-edit
       :area-list="areaList"
+      show-postal
       show-delete
       show-set-default
       show-search-result
@@ -15,17 +18,16 @@
 </template>
 
 <script>
-import { Toast, Area, Popup, AddressList, AddressEdit } from "vant";
-import areaList from "../../API/areaList";
+import { Toast } from "vant";
+import areaList from "@/assets/areaList.js";
+// import areaList from "../../API/areaList";
+
 export default {
   data() {
     return {
       areaList,
       searchResult: []
     };
-  },
-  created() {
-    // console.log("打印省市数据", areaFile);
   },
   methods: {
     onSave() {
@@ -50,14 +52,5 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
-.addressEdit {
-  /deep/ .van-address-edit {
-    position: absolute;
-    width: 90%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-}
+<style scoped>
 </style>

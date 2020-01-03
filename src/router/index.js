@@ -4,6 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import sign from "../components/base/sign.vue"
 import main from "../components/base/main.vue"
 import home from "../components/home/home.vue"
+import test from "../components/base/test.vue"
 
 Vue.use(Router)
 
@@ -11,6 +12,13 @@ export default new Router({
   routes: [{
       path: '/',
       redirect: '/sign'
+    },
+    {
+      path: '/test',
+      name: 'test',
+      components: {
+        test
+      },
     },
     {
       path: '/main',

@@ -2,12 +2,13 @@
   <div id="app">
     <router-view name="sign"></router-view>
     <router-view name="main"></router-view>
+    <router-view name="test"></router-view>
   </div>
 </template>
 
 <script>
 export default {
-  name: "App",
+  name: "App"
 };
 </script>
 
@@ -20,7 +21,8 @@ h1,
 h2,
 h3,
 h4,
-h5,p {
+h5,
+p {
   padding: 0;
   margin: 0;
 }
@@ -31,7 +33,7 @@ li {
 a {
   text-decoration: none;
 }
-.mylinkClass{
-  color: #25A1FF;
+.mylinkClass {
+  color: #25a1ff;
 }
 </style>
