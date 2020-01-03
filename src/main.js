@@ -25,7 +25,9 @@ import {
   Collapse,
   CollapseItem,
   Panel,
-  Toast
+  Button,
+  AddressList,
+  AddressEdit
 } from 'vant';
 
 Vue.use(IndexBar).use(IndexAnchor);
@@ -34,7 +36,8 @@ Vue.use(RadioGroup);
 Vue.use(Radio);
 Vue.use(Collapse).use(CollapseItem);
 Vue.use(Panel);
-Vue.use(Toast);
+Vue.use(Button).use(AddressList)
+Vue.use(AddressEdit)
 Vue.use(Vant);
 
 //引入element
