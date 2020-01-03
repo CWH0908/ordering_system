@@ -1,7 +1,5 @@
 <template>
   <div>
-    <van-area :area-list="areaList" />
-
     <van-address-edit
       :area-list="areaList"
       show-postal
@@ -19,9 +17,7 @@
 
 <script>
 import { Toast } from "vant";
-import areaList from "@/assets/areaList.js";
-// import areaList from "../../API/areaList";
-
+import areaList from "@/assets/areaList.js"
 export default {
   data() {
     return {

@@ -9,7 +9,7 @@
       @edit="onEdit"
     />
     <div class="addressEdit" v-show="isShowEditPart">
-      <addressEdit></addressEdit>
+      <addressEdit @cancelEdit="cancelEdit" @savelEdit="savelEdit"></addressEdit>
     </div>
   </div>
 </template>
@@ -26,11 +26,38 @@ export default {
   data() {
     return {
       chosenAddressId: "1", //选择的地址
-      addressList: [], //地址列表的数据
+      //   addressList: [], //地址列表的数据
       isShowEditPart: false //是否显示地址输入框
     };
   },
-
+  computed: {
+    currentUser() {
+      return JSON.parse(localStorage.getItem("currentUser"));
+    },
+    addressData() {
+      return this.currentUser.addressData;
+    },
+    addressList() {
+    //   debugger;
+      if (this.addressData.length == 0) {
+        return [];
+      } else {
+        let newArr = [];
+        this.addressData.forEach(addressItem => {
+        //   debugger;
+          let newObj = {};
+          newObj.name = this.addressData.receiverName;
+          newObj.tel = this.addressData.receiverPhone;
+          newObj.address = this.addressData.receiverAddress;
+          newArr.push(newObj);
+        });
+        let addressData = JSON.parse(localStorage.getItem("currentUser")).addressData;
+        addressData.push();
+        localStorage.setItem("currentUser", addressData);
+        return newArr;
+      }
+    }
+  },
   methods: {
     onAdd() {
       //   Toast("新增地址");
@@ -38,6 +65,15 @@ export default {
     },
     onEdit(item, index) {
       Toast("编辑地址:" + index);
+    },
+    //保存修改
+    savelEdit() {
+      this.isShowEditPart = false;
+      Toast("已保存");
+    },
+    //取消修改函数
+    cancelEdit() {
+      this.isShowEditPart = false;
     }
   },
   components: {
