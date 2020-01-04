@@ -6,7 +6,7 @@
         <van-field
           v-model="receiverName"
           clearable
-          type="number"
+          type="tel"
           label="姓名"
           placeholder="请输入收货人姓名"
           required
@@ -30,7 +30,7 @@
         <van-field
           v-model="receiverAddress"
           clearable
-          type="number"
+          type="tel"
           label="地址"
           placeholder="请输入收货地址"
           required
@@ -46,6 +46,8 @@
 
 <script>
 import { Toast, Field } from "vant";
+import { updateAddress } from "../../API/checkUser";
+import { mapMutations, mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -54,7 +56,13 @@ export default {
       receiverAddress: ""
     };
   },
+  computed: {
+    ...mapGetters(["currentUser"])
+  },
   methods: {
+    ...mapMutations({
+      set_currentUser: "set_currentUser"
+    }),
     saveButton() {
       if (
         this.receiverName.trim() != "" &&
@@ -63,17 +71,25 @@ export default {
       ) {
         //把新的收货信息存储到 localStorage和数据库中
         let newObj = {};
-        newObj.receiverName = this.receiverName;
-        newObj.receiverPhone = this.receiverPhone;
-        newObj.receiverAddress = this.receiverAddress;
-
-        let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        newObj.name = this.receiverName;
+        newObj.tel = this.receiverPhone;
+        newObj.address = this.receiverAddress;
+        //从vuex读取当前用户购物车，完成新地址写入
+        let currentUser = JSON.parse(JSON.stringify(this.currentUser));
         currentUser.addressData.push(newObj);
-        localStorage.setItem("currentUser",JSON.stringify(currentUser));
+
+        //更新到vuex
+        this.set_currentUser(currentUser);
 
         //存入数据库
+        console.log(
+          "存入数据库的数据",
+          currentUser.userAccount,
+          currentUser.addressData
+        );
+        updateAddress(currentUser.userAccount, currentUser.addressData);
 
-        this.$emit("savelEdit"); //抛出取消修改函数
+        this.$emit("savelEdit"); //抛出保存新增地址函数
       } else {
         Toast("请完善信息");
       }

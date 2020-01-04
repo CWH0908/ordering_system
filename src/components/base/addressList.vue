@@ -17,6 +17,7 @@
 <script>
 import { Toast } from "vant";
 import addressEdit from "../base/addressEdit";
+import { mapGetters } from "vuex";
 export default {
   created() {
     this.addressList = JSON.parse(
@@ -26,37 +27,47 @@ export default {
   data() {
     return {
       chosenAddressId: "1", //选择的地址
-      //   addressList: [], //地址列表的数据
+      //   addressList: [],
       isShowEditPart: false //是否显示地址输入框
     };
   },
   computed: {
-    currentUser() {
-      return JSON.parse(localStorage.getItem("currentUser"));
-    },
-    addressData() {
-      return this.currentUser.addressData;
-    },
-    addressList() {
-    //   debugger;
-      if (this.addressData.length == 0) {
-        return [];
-      } else {
-        let newArr = [];
-        this.addressData.forEach(addressItem => {
-        //   debugger;
-          let newObj = {};
-          newObj.name = this.addressData.receiverName;
-          newObj.tel = this.addressData.receiverPhone;
-          newObj.address = this.addressData.receiverAddress;
-          newArr.push(newObj);
-        });
-        let addressData = JSON.parse(localStorage.getItem("currentUser")).addressData;
-        addressData.push();
-        localStorage.setItem("currentUser", addressData);
-        return newArr;
-      }
+    ...mapGetters(["currentUser"]),
+    //地址列表的数据
+    addressList: {
+      get() {
+        return this.currentUser.addressData;
+      },
+      set() {}
     }
+    // currentUser() {
+    //   console.log("用户信息@@@@@@@@", this.currentUser);
+    //   return JSON.parse(localStorage.getItem("currentUser"));
+    // },
+    // addressData() {
+    //   console.log("地址信息@@@@@@@@", this.currentUser.addressData);
+    //   return this.currentUser.addressData;
+    // }
+    // addressList() {
+    //   debugger;
+    //   if (this.addressData.length == 0) {
+    //     return [];
+    //   } else {
+    //     let newArr = [];
+    //     this.addressData.forEach(addressItem => {
+    //     //   debugger;
+    //       let newObj = {};
+    //       newObj.name = this.addressData.receiverName;
+    //       newObj.tel = this.addressData.receiverPhone;
+    //       newObj.address = this.addressData.receiverAddress;
+    //       newArr.push(newObj);
+    //     });
+    //     let addressData = JSON.parse(localStorage.getItem("currentUser")).addressData;
+    //     addressData.push();
+    //     localStorage.setItem("currentUser", addressData);
+    //     return newArr;
+    //   }
+    // }
   },
   methods: {
     onAdd() {

@@ -16,6 +16,11 @@ const mutations = {
   set_all_shop_car(state, all_shop_car) {
     state.all_shop_car = all_shop_car;
     // this.$set(state.all_shop_car, key, all_shop_car)
+  },
+
+  //设置当前用户信息
+  set_currentUser(state, currentUser) {
+    state.currentUser = currentUser;
   }
 }
 

@@ -35,3 +35,15 @@ export function inputRegister(account,psw) {
     return Promise.resolve(res.data[0]);
   });
 }
+
+//更新用户数据库
+export function updateAddress(account,addressData) {
+  return axios.get("http://localhost:8081/updateAddress", {
+    params: {
+      account,
+      addressData
+    }
+  }).then(res => {
+    return Promise.resolve(res.data[0]);
+  });
+}

@@ -52,6 +52,8 @@
 
 #   2020-1-3 下午 完成登录注册数据库及其跳转逻辑、注册逻辑,登录后保存数据到 localStorage （currentUser）
 
+#   2020-1-3 晚上 自己搭建地址组件，剩余(新增地址和修改地址数据到localStorage和数据库)
+
 # ordering_system
 
 > A Vue.js project
