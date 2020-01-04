@@ -54,6 +54,8 @@
 
 #   2020-1-3 晚上 自己搭建地址组件，剩余(新增地址和修改地址数据到localStorage和数据库)
 
+#   2020-1-4 晚上 完成地址组件编写保存到vuex，剩余（未更新地址数据到数据库，已废弃localStorage保存数据）
+
 # ordering_system
 
 > A Vue.js project

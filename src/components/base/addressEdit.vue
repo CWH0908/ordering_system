@@ -1,10 +1,10 @@
 <template>
   <div class="addressEdit">
     <div class="container">
-      <div class="receiverName">
+      <div class="name">
         <!-- <van-cell-group> -->
         <van-field
-          v-model="receiverName"
+          v-model="currentName"
           clearable
           type="tel"
           label="姓名"
@@ -13,10 +13,10 @@
         />
         <!-- </van-cell-group> -->
       </div>
-      <div class="receiverPhone">
+      <div class="tel">
         <!-- <van-cell-group> -->
         <van-field
-          v-model="receiverPhone"
+          v-model="currentTel"
           clearable
           type="number"
           label="手机"
@@ -25,10 +25,10 @@
         />
         <!-- </van-cell-group> -->
       </div>
-      <div class="receiverAddress">
+      <div class="address">
         <!-- <van-cell-group> -->
         <van-field
-          v-model="receiverAddress"
+          v-model="currentAddress"
           clearable
           type="tel"
           label="地址"
@@ -37,9 +37,21 @@
         />
         <!-- </van-cell-group> -->
       </div>
-      <van-button @click="saveButton" class="saveButton" type="danger">保存</van-button>
+      <van-button @click="saveButton" class="saveButton" type="danger" v-if="editType!='modify'">保存</van-button>
+      <van-button
+        v-if="editType=='modify'"
+        @click="modifyButton"
+        class="deleteButton"
+        type="danger"
+      >修改</van-button>
+      <van-button
+        v-if="editType=='modify'"
+        @click="modifyButton"
+        class="deleteButton"
+        type="danger"
+        plain
+      >删除</van-button>
       <van-button @click="cancelButton" class="cancelButton" type="danger" plain>取消</van-button>
-      <van-button @click="deleteButton" class="deleteButton" type="danger" plain>删除</van-button>
     </div>
   </div>
 </template>
@@ -49,11 +61,30 @@ import { Toast, Field } from "vant";
 import { updateAddress } from "../../API/checkUser";
 import { mapMutations, mapGetters } from "vuex";
 export default {
+  props: {
+    //用于区分是哪种输入框，新增还是修改
+    editType: {
+      type: String,
+      default: ""
+    },
+    name: {
+      type: String,
+      default: ""
+    },
+    tel: {
+      type: String,
+      default: ""
+    },
+    address: {
+      type: String,
+      default: ""
+    }
+  },
   data() {
     return {
-      receiverName: "",
-      receiverPhone: "",
-      receiverAddress: ""
+      currentName: this.name,
+      currentTel: this.tel,
+      currentAddress: this.address
     };
   },
   computed: {
@@ -63,17 +94,22 @@ export default {
     ...mapMutations({
       set_currentUser: "set_currentUser"
     }),
+    //修改按钮
+    modifyButton() {
+      this.$emit("modifyEdit"); //抛出修改
+    },
+    //保存新增按钮
     saveButton() {
       if (
-        this.receiverName.trim() != "" &&
-        this.receiverPhone.trim() != "" &&
-        this.receiverAddress.trim() != ""
+        this.currentName.trim() != "" &&
+        this.currentTel.trim() != "" &&
+        this.currentAddress.trim() != ""
       ) {
         //把新的收货信息存储到 localStorage和数据库中
         let newObj = {};
-        newObj.name = this.receiverName;
-        newObj.tel = this.receiverPhone;
-        newObj.address = this.receiverAddress;
+        newObj.name = this.currentName;
+        newObj.tel = this.currentTel;
+        newObj.address = this.currentAddress;
         //从vuex读取当前用户购物车，完成新地址写入
         let currentUser = JSON.parse(JSON.stringify(this.currentUser));
         currentUser.addressData.push(newObj);
@@ -89,14 +125,21 @@ export default {
         );
         updateAddress(currentUser.userAccount, currentUser.addressData);
 
+        //输入框置空
+        this.currentName = "";
+        this.currentTel = "";
+        this.currentAddress = "";
+
         this.$emit("savelEdit"); //抛出保存新增地址函数
       } else {
         Toast("请完善信息");
       }
     },
+    //取消按钮
     cancelButton() {
       this.$emit("cancelEdit"); //抛出取消修改函数
     },
+    //删除地址按钮
     deleteButton() {}
   }
 };
@@ -122,13 +165,13 @@ export default {
     font-size: 1rem;
     padding: 1rem 1rem;
     box-sizing: border-box;
-    .receiverName {
+    .name {
       border-bottom: 1px solid gray;
     }
-    .receiverPhone {
+    .tel {
       border-bottom: 1px solid gray;
     }
-    .receiverAddress {
+    .address {
       border-bottom: 1px solid gray;
     }
     .saveButton {

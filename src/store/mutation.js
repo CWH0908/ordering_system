@@ -21,7 +21,7 @@ const mutations = {
   //设置当前用户信息
   set_currentUser(state, currentUser) {
     state.currentUser = currentUser;
-  }
+  },
 }
 
 export default mutations;

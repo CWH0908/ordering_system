@@ -8,8 +8,18 @@
       @add="onAdd"
       @edit="onEdit"
     />
-    <div class="addressEdit" v-show="isShowEditPart">
+    <div class="addressEdit" v-if="isShowInsertPart">
       <addressEdit @cancelEdit="cancelEdit" @savelEdit="savelEdit"></addressEdit>
+    </div>
+    <div class="addressEdit" v-if="isShowModifyPart">
+      <addressEdit
+        @cancelEdit="cancelEdit"
+        @modifyEdit="modifyEdit"
+        :editType="'modify'"
+        :name="name"
+        :tel="tel"
+        :address="address"
+      ></addressEdit>
     </div>
   </div>
 </template>
@@ -27,8 +37,11 @@ export default {
   data() {
     return {
       chosenAddressId: "1", //选择的地址
-      //   addressList: [],
-      isShowEditPart: false //是否显示地址输入框
+      isShowInsertPart: false, //是否显示地址新增框
+      isShowModifyPart: false, //是否显示地址修改框
+      name: "", //用于暂存具体地址，以供传入修改框组件
+      tel: "",
+      address: ""
     };
   },
   computed: {
@@ -70,21 +83,32 @@ export default {
     // }
   },
   methods: {
+    //新增地址
     onAdd() {
-      //   Toast("新增地址");
-      this.isShowEditPart = true;
+      this.isShowInsertPart = true;
     },
+    //编辑地址
     onEdit(item, index) {
-      Toast("编辑地址:" + index);
+      //修改数据后通过props传给地址修改组件
+      this.name = this.currentUser.addressData[index].name;
+      this.tel = this.currentUser.addressData[index].tel;
+      this.address = this.currentUser.addressData[index].address;
+      this.isShowModifyPart = true;
     },
     //保存修改
     savelEdit() {
-      this.isShowEditPart = false;
+      this.isShowInsertPart = false;
       Toast("已保存");
     },
-    //取消修改函数
+    //修改地址函数
+    modifyEdit() {
+      this.isShowModifyPart = false;
+      Toast("已修改");
+    },
+    //取消新增、修改函数
     cancelEdit() {
-      this.isShowEditPart = false;
+      this.isShowInsertPart = false;
+      this.isShowModifyPart = false;
     }
   },
   components: {
