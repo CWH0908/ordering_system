@@ -14,10 +14,10 @@
       <!-- 地址，支付 -->
       <div class="operation">
         <van-collapse v-model="activeNames">
-          <van-collapse-item title="选择收货地址" name="1" :value="sendAddress">
-            <div>地址一</div>
-            <div>地址二</div>
-            <div>地址三</div>
+          <van-collapse-item title="选择收货地址" name="1" :value="sendAddress.address">
+            <div class="addressListPart">
+              <addressList @onClickItem="onClickItem"></addressList>
+            </div>
           </van-collapse-item>
           <van-collapse-item title="支付方式" name="2" :value="payRadio">
             <van-radio-group v-model="payRadio">
@@ -73,12 +73,17 @@
 
 <script>
 import { getHomeShoplist } from "../../API/getHomeFoodList";
-import { mapGetters } from "vuex";
+import { mapMutations, mapGetters } from "vuex";
+import addressList from "../base/addressList";
+import {Toast} from "vant"
 
 export default {
   created() {
     this.shopID = this.$route.params.id;
     this._getShoplist();
+    if (this.currentUser.addressData.length > 0) {
+      this.sendAddress = this.currentUser.addressData[0];
+    }
   },
   data() {
     return {
@@ -86,10 +91,14 @@ export default {
       shopInfo: {}, //店铺信息
       activeNames: ["0"], //折叠面板
       payRadio: "支付宝", //单选框支付方式
-      sendAddress: "" //配送地址
+      sendAddress: {} //配送地址
     };
   },
   methods: {
+    ...mapMutations({
+      set_all_shop_car: "set_all_shop_car",
+      set_currentUser: "set_currentUser"
+    }),
     goBack() {
       this.$router.go(-1);
     },
@@ -102,13 +111,60 @@ export default {
     },
     //结算按钮
     settlement() {
-      alert("支付成功");
+      Toast("支付成功");
+      //结算成功将vuex中currentUser的当前购物车addressData特定店铺清空，同时在currentUser的orderData中新增一条数据
+      this.all_shop_car.forEach(shopItem => {
+        if (shopItem.shopID == this.shopID) {
+          let newObj = {};
+          // newObj.shopID = this.shopID;
+          newObj.shopInfo =this.shopInfo;
+          newObj.userAccount = this.currentUser.userAccount;
+          newObj.foodList = shopItem.shopCar;
+          newObj.addressData = this.sendAddress;
+          newObj.buyTime = this.getCurrentTime();
+          this.currentUser.orderData.push(newObj);
+          this.set_currentUser(this.currentUser);
+
+          //存储好订单后清空此店铺购物车
+          shopItem.shopCar = [];
+        }
+      });
+
+      //数据库更新数据
+
       //跳转到订单组件
       this.$router.push({ path: "/main/order" });
+    },
+    //获取当前时间
+    getCurrentTime() {
+      let time = new Date();
+      let years = time.getFullYear();
+      let months = this.formatTime(time.getMonth() + 1);
+      let days = this.formatTime(time.getDate());
+      let hours = this.formatTime(time.getHours());
+      let minutes = this.formatTime(time.getMinutes());
+      let seconds = this.formatTime(time.getSeconds());
+      return `${years}-${months}-${days} ${hours}:${minutes}:${seconds}`;
+    },
+    formatTime(str) {
+      str = str.toString();
+      str = str.length == 1 ? "0" + str : str;
+      return str
+    },
+    //选择地址
+    onClickItem(item, index) {
+      this.sendAddress = JSON.parse(JSON.stringify(item));
     }
   },
   computed: {
-    ...mapGetters(["all_shop_car"]),
+    ...mapGetters(["all_shop_car", "currentUser"]),
+    //默认配送地址
+    // 此方式绑定了currentUser值，无法通过点击地址信息来设置，因此换成普通的初始化方式
+    // sendAddress: {
+    //   get() {
+    //     return this.currentUser.addressData[0];
+    //   },set(){}
+    // },
     //当前店铺的购物车信息
     currentShopCar() {
       let newArr = [];
@@ -119,7 +175,7 @@ export default {
       });
       if (newArr.length == 0) {
         //被刷新过页面，重新回到
-        this.$router.push({ path: `/main/home/${this.shopID}` });
+        // this.$router.push({ path: `/main/home/${this.shopID}` });
       } else {
         return newArr;
       }
@@ -137,6 +193,9 @@ export default {
       });
       return sumMoney;
     }
+  },
+  components: {
+    addressList
   }
 };
 </script>
@@ -184,6 +243,8 @@ export default {
       //   margin-top: 6vh;
       /deep/ .van-radio:nth-child(1) {
         margin-bottom: 1rem;
+      }
+      .addressListPart {
       }
     }
     .orderInfo {

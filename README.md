@@ -27,7 +27,7 @@
 #        {
 #            shopID:'',
 #            shopCar:[
-#                {shopID:'',foodID:'',foodCount:'',foodPrice:""}
+#                {shopID:'',foodCount:'',  foodData:{foodID:'',foodName:"",pic_url:"",foodPrice:""}  }
 #            ]
 #        }
 #    ]
@@ -55,6 +55,8 @@
 #   2020-1-3 晚上 自己搭建地址组件，剩余(新增地址和修改地址数据到localStorage和数据库)
 
 #   2020-1-4 晚上 完成地址组件编写保存到vuex，剩余（未更新地址数据到数据库，已废弃localStorage保存数据）
+
+#   2020-1-5 上午 完成订单vuex数据和订单组件的结构，剩余（未将订单数据保存到数据库）
 
 # ordering_system
 

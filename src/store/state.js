@@ -9,7 +9,7 @@ const state = {
     "password": "123",
     "pic_url": "http://49.235.92.173:70/graduationDesign_images/defaultHeadImg.jpg",
     "orderData": [],
-    "addressData": [{name:"陈同学",tel:"15815817682",address:"白云校区  17栋812"}]
+    "addressData": [{id:"0",name:"陈同学",tel:"15815817682",address:"白云校区  17栋812",isDefault:true}]
   }, //用于保存当前的用户信息
 }
 

@@ -7,6 +7,7 @@
       default-tag-text="默认"
       @add="onAdd"
       @edit="onEdit"
+      @click-item="onClickItem"
     />
     <div class="addressEdit" v-if="isShowInsertPart">
       <addressEdit @cancelEdit="cancelEdit" @savelEdit="savelEdit"></addressEdit>
@@ -15,10 +16,12 @@
       <addressEdit
         @cancelEdit="cancelEdit"
         @modifyEdit="modifyEdit"
+        @deleteEdit="deleteEdit"
         :editType="'modify'"
         :name="name"
         :tel="tel"
         :address="address"
+        :index="index"
       ></addressEdit>
     </div>
   </div>
@@ -34,6 +37,11 @@ export default {
       localStorage.getItem("currentUser")
     ).addressData;
   },
+  mounted() {
+    // document
+    //   .getElementsByClassName("van-radio__icon")[0]
+    //   .classList.add("van-radio__icon--checked");
+  },
   data() {
     return {
       chosenAddressId: "1", //选择的地址
@@ -41,7 +49,8 @@ export default {
       isShowModifyPart: false, //是否显示地址修改框
       name: "", //用于暂存具体地址，以供传入修改框组件
       tel: "",
-      address: ""
+      address: "",
+      index: -1 //索引下标
     };
   },
   computed: {
@@ -53,36 +62,13 @@ export default {
       },
       set() {}
     }
-    // currentUser() {
-    //   console.log("用户信息@@@@@@@@", this.currentUser);
-    //   return JSON.parse(localStorage.getItem("currentUser"));
-    // },
-    // addressData() {
-    //   console.log("地址信息@@@@@@@@", this.currentUser.addressData);
-    //   return this.currentUser.addressData;
-    // }
-    // addressList() {
-    //   debugger;
-    //   if (this.addressData.length == 0) {
-    //     return [];
-    //   } else {
-    //     let newArr = [];
-    //     this.addressData.forEach(addressItem => {
-    //     //   debugger;
-    //       let newObj = {};
-    //       newObj.name = this.addressData.receiverName;
-    //       newObj.tel = this.addressData.receiverPhone;
-    //       newObj.address = this.addressData.receiverAddress;
-    //       newArr.push(newObj);
-    //     });
-    //     let addressData = JSON.parse(localStorage.getItem("currentUser")).addressData;
-    //     addressData.push();
-    //     localStorage.setItem("currentUser", addressData);
-    //     return newArr;
-    //   }
-    // }
   },
   methods: {
+    //选择地址
+    onClickItem(item, index) {
+        // console.log(item,index);
+        this.$emit("onClickItem",item,index);
+    },
     //新增地址
     onAdd() {
       this.isShowInsertPart = true;
@@ -93,17 +79,23 @@ export default {
       this.name = this.currentUser.addressData[index].name;
       this.tel = this.currentUser.addressData[index].tel;
       this.address = this.currentUser.addressData[index].address;
+      this.index = index;
       this.isShowModifyPart = true;
     },
-    //保存修改
+    //新增
     savelEdit() {
       this.isShowInsertPart = false;
       Toast("已保存");
     },
-    //修改地址函数
+    //修改
     modifyEdit() {
       this.isShowModifyPart = false;
       Toast("已修改");
+    },
+    //删除
+    deleteEdit() {
+      this.isShowModifyPart = false;
+      Toast("已删除");
     },
     //取消新增、修改函数
     cancelEdit() {
@@ -136,6 +128,7 @@ export default {
     height: 100vh;
     width: 100vw;
     background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
   }
 }
 </style>

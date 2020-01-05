@@ -46,7 +46,7 @@
       >修改</van-button>
       <van-button
         v-if="editType=='modify'"
-        @click="modifyButton"
+        @click="deleteButton"
         class="deleteButton"
         type="danger"
         plain
@@ -78,6 +78,10 @@ export default {
     address: {
       type: String,
       default: ""
+    },
+    index: {
+      type: Number,
+      default: -1
     }
   },
   data() {
@@ -94,22 +98,41 @@ export default {
     ...mapMutations({
       set_currentUser: "set_currentUser"
     }),
-    //修改按钮
+    //取消按钮
+    cancelButton() {
+      this.$emit("cancelEdit"); //抛出取消修改函数
+    },
+    //修改
     modifyButton() {
+      //在vuex中修改
+      let currentUser = JSON.parse(JSON.stringify(this.currentUser));
+      currentUser.addressData[this.index].name = this.currentName;
+      currentUser.addressData[this.index].tel = this.currentTel;
+      currentUser.addressData[this.index].address = this.currentAddress;
+      this.set_currentUser(currentUser);
+
+      //在数据库中修改
+
       this.$emit("modifyEdit"); //抛出修改
     },
-    //保存新增按钮
+    //新增
     saveButton() {
       if (
         this.currentName.trim() != "" &&
         this.currentTel.trim() != "" &&
         this.currentAddress.trim() != ""
       ) {
-        //把新的收货信息存储到 localStorage和数据库中
+        //把新的收货信息存储到 vuex和数据库中
         let newObj = {};
+        let timeNumber = new Date().getTime();
+        newObj.id = timeNumber;
         newObj.name = this.currentName;
         newObj.tel = this.currentTel;
         newObj.address = this.currentAddress;
+        //第一条数据设为默认
+        if (this.currentUser.addressData.length == 0) {
+          newObj.isDefault = true;
+        }
         //从vuex读取当前用户购物车，完成新地址写入
         let currentUser = JSON.parse(JSON.stringify(this.currentUser));
         currentUser.addressData.push(newObj);
@@ -135,12 +158,20 @@ export default {
         Toast("请完善信息");
       }
     },
-    //取消按钮
-    cancelButton() {
-      this.$emit("cancelEdit"); //抛出取消修改函数
-    },
-    //删除地址按钮
-    deleteButton() {}
+    //删除
+    deleteButton() {
+      // 在vuex中删除
+      let currentUser = JSON.parse(JSON.stringify(this.currentUser));
+      //   delete currentUser.addressData[this.index];
+      currentUser.addressData.splice(this.index, 1);
+      //长度不为0，设置第一个为默认
+      if (currentUser.addressData.length != 0) {
+        currentUser.addressData[0].isDefault = true;
+      }
+      this.set_currentUser(currentUser);
+      //在数据库删除
+      this.$emit("deleteEdit"); //抛出删除
+    }
   }
 };
 </script>

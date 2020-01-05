@@ -45,7 +45,7 @@ Vue.use(Area)
 Vue.use(Button)
 Vue.use(Popup)
 Vue.use(Field)
-// Vue.use(Vant);
+Vue.use(Vant);
 
 
 //引入element
