@@ -112,6 +112,10 @@ export default {
       this.set_currentUser(currentUser);
 
       //在数据库中修改
+      updateAddress(
+        currentUser.userAccount,
+        JSON.stringify(currentUser.addressData)
+      );
 
       this.$emit("modifyEdit"); //抛出修改
     },
@@ -140,13 +144,10 @@ export default {
         //更新到vuex
         this.set_currentUser(currentUser);
 
-        //存入数据库
-        console.log(
-          "存入数据库的数据",
+        updateAddress(
           currentUser.userAccount,
-          currentUser.addressData
+          JSON.stringify(currentUser.addressData)
         );
-        updateAddress(currentUser.userAccount, currentUser.addressData);
 
         //输入框置空
         this.currentName = "";
@@ -170,6 +171,12 @@ export default {
       }
       this.set_currentUser(currentUser);
       //在数据库删除
+
+      updateAddress(
+        currentUser.userAccount,
+        JSON.stringify(currentUser.addressData)
+      );
+
       this.$emit("deleteEdit"); //抛出删除
     }
   }

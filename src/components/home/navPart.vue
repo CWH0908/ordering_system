@@ -68,6 +68,7 @@ export default {
 
 <style lang="less" scoped>
 .navPart {
+  background: -webkit-gradient(linear, 0 0, 0 100%, from(#4169e1), to(#b0c4de));
   .navData {
     ul {
       display: flex;

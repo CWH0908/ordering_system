@@ -36,12 +36,24 @@ export function inputRegister(account,psw) {
   });
 }
 
-//更新用户数据库
+//更新用户地址数据库
 export function updateAddress(account,addressData) {
   return axios.get("http://localhost:8081/updateAddress", {
     params: {
       account,
       addressData
+    }
+  }).then(res => {
+    return Promise.resolve(res.data[0]);
+  });
+}
+
+//更新用户订单数据库
+export function updateOrder(account,orderData) {
+  return axios.get("http://localhost:8081/updateOrder", {
+    params: {
+      account,
+      orderData
     }
   }).then(res => {
     return Promise.resolve(res.data[0]);

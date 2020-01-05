@@ -75,6 +75,7 @@
 import { getHomeShoplist } from "../../API/getHomeFoodList";
 import { mapMutations, mapGetters } from "vuex";
 import addressList from "../base/addressList";
+import { updateOrder } from "../../API/checkUser";
 import { Toast } from "vant";
 
 export default {
@@ -148,11 +149,11 @@ export default {
             shopItem.shopCar = [];
           }
         });
-
         //数据库更新数据
-
-
-
+        updateOrder(
+          this.currentUser.userAccount,
+          JSON.stringify(this.currentUser.orderData)
+        );
       }, 3000);
 
       //跳转到订单组件

@@ -25,12 +25,11 @@
 
 <script>
 import addressList from "../base/addressList";
+import {mapGetters} from "vuex"
 export default {
   created() {
-    this.userAccount = JSON.parse(
-      localStorage.getItem("currentUser")
-    ).userAccount;
-    this.pic_url = JSON.parse(localStorage.getItem("currentUser")).pic_url;
+    this.userAccount = this.currentUser.userAccount;
+    this.pic_url = "http://49.235.92.173:70/graduationDesign_images/defaultHeadImg.jpg";
   },
   data() {
     return {
@@ -38,6 +37,11 @@ export default {
       pic_url: "", //用户头像
       activeNames: ["1"] //地址折叠面板
     };
+  },
+  computed: {
+    ...mapGetters([
+      "currentUser"
+    ])
   },
   filters: {
     //隐藏手机信息，待完善

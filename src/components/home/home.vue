@@ -64,5 +64,8 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less" scoped>
+.home {
+  // background: -webkit-gradient(linear, 0 0, 0 100%, from(#4169e1), to(#b0c4de));
+}
 </style>
