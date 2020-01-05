@@ -104,6 +104,10 @@ export default {
         }
       });
     },
+    //购物车显隐
+    toggleShopCar() {
+      this.$emit("toggleShopCar");
+    },
     ...mapMutations({
       set_all_shop_car: "set_all_shop_car"
     })
@@ -174,8 +178,8 @@ export default {
       position: sticky;
       top: 0;
       z-index: 999;
-      background-color: #d8bfd8;
-      color: gray;
+      background-color: #6495ed;
+      color: white;
     }
     li {
       position: relative;
@@ -189,6 +193,7 @@ export default {
     .nothing {
       color: gray;
       text-indent: 1rem;
+      padding: 0.4rem 0;
     }
   }
 }

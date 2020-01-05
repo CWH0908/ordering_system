@@ -79,11 +79,11 @@ export default {
 
   methods: {
     goSettlement() {
-    //   alert("结算：￥" + this.currentMoney + "元");
-      this.$emit("goSettlement",this.currentMoney);
+      //   alert("结算：￥" + this.currentMoney + "元");
+      this.$emit("goSettlement", this.currentMoney);
     },
-    toggleShopCar(){
-        this.$emit("toggleShopCar")
+    toggleShopCar() {
+      this.$emit("toggleShopCar");
     }
   }
 };

@@ -1,6 +1,7 @@
 <template>
   <div class="person">
     <div class="container">
+      <div class="header">个人中心</div>
       <div class="userInfoPart">
         <img :src="pic_url" alt />
         <div>
@@ -23,7 +24,7 @@
 </template>
 
 <script>
-import addressList from "../base/addressList"
+import addressList from "../base/addressList";
 export default {
   created() {
     this.userAccount = JSON.parse(
@@ -52,7 +53,7 @@ export default {
       }
     }
   },
-  components:{
+  components: {
     addressList
   }
 };
@@ -62,6 +63,7 @@ export default {
 .person {
   .container {
     height: 100vh;
+    padding-top: 1rem;
     background: -webkit-gradient(
       linear,
       0 0,
@@ -69,6 +71,17 @@ export default {
       from(#4169e1),
       to(#b0c4de)
     );
+    .header {
+      background-color: white;
+      width: 90%;
+      margin: 0 auto;
+      height: 6vh;
+      line-height: 6vh;
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      border-radius: 24px;
+    }
     .userInfoPart {
       background: white;
       margin: 0 auto;

@@ -3,7 +3,8 @@
     <div class="container">
       <div v-show="currentUser.orderData.length==0" class="noOrder">还没有订单呢，快去选购吧~</div>
       <ul>
-        <li v-for="(item,index) in orderData" :key="index">
+        <li class="header">我的订单</li>
+        <li v-for="(item,index) in orderData" :key="index" @click="openDetails(item)">
           <div class="orderItem">
             <img :src="item.shopInfo.pic_url" alt />
             <div class="rightPart">
@@ -11,7 +12,7 @@
                 <h3>{{item.shopInfo.shopName}}</h3>
                 <p>{{item.buyTime}}</p>
               </div>
-              <div class="foorInfo">
+              <div class="foodInfo">
                 <ul>
                   <li v-for="(foodItem,foodIndex) in item.foodList" :key="foodIndex">
                     <div>
@@ -29,27 +30,59 @@
                 </ul>
               </div>
             </div>
-            <van-button type="info" size="mini">取消订单</van-button>
-            <van-button type="info" size="mini">再叫一单</van-button>
+            <div class="operation">
+              <van-button type="danger" size="small">取消订单</van-button>
+              <van-button type="info" size="small" @click.stop="goShop(item)">再叫一单</van-button>
+            </div>
           </div>
         </li>
       </ul>
+      <orderDetails
+        :orderDataItem="orderDataItem"
+        v-if="isShowDetails"
+        @closeDetails="closeDetails"
+      ></orderDetails>
     </div>
   </div>
 </template>
 
 <script>
+import { Toast } from "vant";
 import { mapGetters } from "vuex";
+import orderDetails from "../order/orderDetails"
 export default {
   data() {
-    return {};
+    return {
+      orderDataItem: {}, //具体的店铺订单对象
+      isShowDetails: false //是否显示订单详情
+    };
   },
-  methods: {},
+  methods: {
+    //打开订单详情
+    openDetails(item) {
+      this.orderDataItem = item;
+      this.isShowDetails = true;
+    },
+    //关闭订单详情
+    closeDetails() {
+      this.isShowDetails = false;
+    },
+    //再叫一单跳转到店铺
+    goShop(item) {
+      Toast("正在火速前往店铺");
+      setTimeout(() => {
+        this.$router.push(`/main/home/${item.shopInfo.shopID}`);
+      });
+    }
+  },
   computed: {
     ...mapGetters(["currentUser"]),
     orderData() {
       return this.currentUser.orderData;
     }
+  },
+  components:{
+    orderDetails
   }
 };
 </script>
@@ -75,6 +108,14 @@ export default {
       width: 100%;
       transform: translate(-50%, -50%);
     }
+    .header {
+      background-color: white;
+      height: 6vh;
+      line-height: 6vh;
+      text-align: center;
+      font-size: 1.2rem;
+      border-radius: 24px;
+    }
     ul {
       padding-top: 1rem;
       li {
@@ -84,6 +125,7 @@ export default {
         .orderItem {
           background-color: white;
           padding: 1rem 0.5rem;
+          border-radius: 10px;
           img {
             float: left;
             width: 15vw;
@@ -103,7 +145,7 @@ export default {
                 font-size: 0.8rem;
               }
             }
-            .foorInfo {
+            .foodInfo {
               div {
                 .name {
                   display: inline-block;
@@ -134,6 +176,10 @@ export default {
                 }
               }
             }
+          }
+          .operation {
+            text-align: right;
+            padding-right: 2rem;
           }
         }
       }

@@ -75,7 +75,7 @@
 import { getHomeShoplist } from "../../API/getHomeFoodList";
 import { mapMutations, mapGetters } from "vuex";
 import addressList from "../base/addressList";
-import {Toast} from "vant"
+import { Toast } from "vant";
 
 export default {
   created() {
@@ -111,29 +111,54 @@ export default {
     },
     //结算按钮
     settlement() {
-      Toast("支付成功");
-      //结算成功将vuex中currentUser的当前购物车addressData特定店铺清空，同时在currentUser的orderData中新增一条数据
-      this.all_shop_car.forEach(shopItem => {
-        if (shopItem.shopID == this.shopID) {
-          let newObj = {};
-          // newObj.shopID = this.shopID;
-          newObj.shopInfo =this.shopInfo;
-          newObj.userAccount = this.currentUser.userAccount;
-          newObj.foodList = shopItem.shopCar;
-          newObj.addressData = this.sendAddress;
-          newObj.buyTime = this.getCurrentTime();
-          this.currentUser.orderData.push(newObj);
-          this.set_currentUser(this.currentUser);
-
-          //存储好订单后清空此店铺购物车
-          shopItem.shopCar = [];
-        }
+      const toast = Toast.loading({
+        duration: 0, // 持续展示 toast
+        forbidClick: true,
+        message: "正在支付"
       });
 
-      //数据库更新数据
+      let second = 3;
+      const timer = setInterval(() => {
+        second--;
+        if (second) {
+          toast.message = `正在支付`;
+        } else {
+          clearInterval(timer);
+          // 手动清除 Toast
+          Toast.clear();
+        }
+      }, 1000);
+      setTimeout(() => {
+        Toast("支付成功");
+        //结算成功将vuex中currentUser的当前购物车addressData特定店铺清空，同时在currentUser的orderData中新增一条数据
+        this.all_shop_car.forEach(shopItem => {
+          if (shopItem.shopID == this.shopID) {
+            let newObj = {};
+            // newObj.shopID = this.shopID;
+            newObj.shopInfo = this.shopInfo;
+            newObj.userAccount = this.currentUser.userAccount;
+            newObj.foodList = shopItem.shopCar;
+            newObj.addressData = this.sendAddress;
+            newObj.payType = this.payRadio;
+            newObj.buyTime = this.getCurrentTime();
+            this.currentUser.orderData.push(newObj);
+            this.set_currentUser(this.currentUser);
+
+            //存储好订单后清空此店铺购物车
+            shopItem.shopCar = [];
+          }
+        });
+
+        //数据库更新数据
+
+
+
+      }, 3000);
 
       //跳转到订单组件
-      this.$router.push({ path: "/main/order" });
+      setTimeout(() => {
+        this.$router.push({ path: "/main/order" });
+      }, 4000);
     },
     //获取当前时间
     getCurrentTime() {
@@ -149,7 +174,7 @@ export default {
     formatTime(str) {
       str = str.toString();
       str = str.length == 1 ? "0" + str : str;
-      return str
+      return str;
     },
     //选择地址
     onClickItem(item, index) {
