@@ -79,6 +79,7 @@ import foodItem from "../base/foodItem";
 import shopCar from "../base/shopCar";
 import shopCarInfo from "../base/shopCarInfo";
 import corfirmOrder from "../base/corfirmOrder";
+import { qiniuDomain } from "../../API/qiniuDomain";
 let that; //全局this对象
 export default {
   beforeCreate() {
@@ -129,6 +130,10 @@ export default {
   //     }
   //   },
   methods: {
+    //商家头像图片尚未使用七牛云
+    getPicUrl(pic_url) {
+      return "http://" + qiniuDomain + "/" + pic_url;
+    },
     goBack() {
       this.$router.go(-1);
     },
@@ -182,7 +187,8 @@ export default {
                     //遍历购物车所有信息，删除指定foodID的数据
                     for (let i in shopItem.shopCar) {
                       if (
-                        shopItem.shopCar[i].foodData.foodID == foodItem.foodData.foodID
+                        shopItem.shopCar[i].foodData.foodID ==
+                        foodItem.foodData.foodID
                       ) {
                         shopItem.shopCar.splice(i, 1);
                       }

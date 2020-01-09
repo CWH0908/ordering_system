@@ -34,7 +34,7 @@
           <ul>
             <li class="confirmOrderItem" v-for="(item,index) in currentShopCar" :key="index">
               <div>
-                <img :src="item.foodData.pic_url" alt />
+                <img :src="getPicUrl(item.foodData.pic_url)" alt />
                 <span class="foodName">{{item.foodData.foodName}}</span>
                 <span class="foodCount">x {{item.foodCount}}</span>
                 <div class="newMoney">
@@ -77,6 +77,7 @@ import { mapMutations, mapGetters } from "vuex";
 import addressList from "../base/addressList";
 import { updateOrder } from "../../API/checkUser";
 import { Toast } from "vant";
+import {qiniuDomain} from "../../API/qiniuDomain";//七牛云外链
 
 export default {
   created() {
@@ -100,6 +101,9 @@ export default {
       set_all_shop_car: "set_all_shop_car",
       set_currentUser: "set_currentUser"
     }),
+    getPicUrl(pic_url) {
+      return "http://" + qiniuDomain + "/" + pic_url;
+    },
     goBack() {
       this.$router.go(-1);
     },
@@ -292,6 +296,7 @@ export default {
           margin-bottom: 1rem;
           img {
             width: 10vw;
+            height: 10vw;
             vertical-align: middle;
           }
           .foodName {

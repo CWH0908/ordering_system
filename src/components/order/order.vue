@@ -49,7 +49,7 @@
 <script>
 import { Toast } from "vant";
 import { mapGetters } from "vuex";
-import orderDetails from "../order/orderDetails"
+import orderDetails from "../order/orderDetails";
 export default {
   data() {
     return {
@@ -81,7 +81,7 @@ export default {
       return this.currentUser.orderData;
     }
   },
-  components:{
+  components: {
     orderDetails
   }
 };
@@ -90,7 +90,7 @@ export default {
 <style lang="less" scoped>
 .order {
   .container {
-    height: 100vh;
+    height: 100%;
     background: -webkit-gradient(
       linear,
       0 0,

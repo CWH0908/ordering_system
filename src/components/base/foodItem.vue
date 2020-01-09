@@ -1,6 +1,6 @@
 <template>
   <div class="foodItem">
-    <img :src="foodItem.pic_url" />
+    <img :src="getPicUrl(foodItem.pic_url)" />
     <div class="foodData">
       <h1>{{foodItem.foodName}}</h1>
       <div>
@@ -27,6 +27,8 @@
 
 <script>
 import { mapGetters } from "vuex";
+import { qiniuDomain } from "../../API/qiniuDomain";
+
 export default {
   props: {
     foodItem: {
@@ -46,7 +48,8 @@ export default {
             } else {
               for (let j in this.all_shop_car[i].shopCar) {
                 if (
-                  this.all_shop_car[i].shopCar[j].foodData.foodID == this.foodItem.foodID
+                  this.all_shop_car[i].shopCar[j].foodData.foodID ==
+                  this.foodItem.foodID
                 ) {
                   //返回在vuex中的购物车计数器的值
                   return this.all_shop_car[i].shopCar[j].foodCount;
@@ -61,6 +64,9 @@ export default {
     }
   },
   methods: {
+    getPicUrl(pic_url) {
+      return "http://" + qiniuDomain + "/" + pic_url;
+    },
     handleChange(value) {
       this.currentBuyNums = value;
       //通知父组件selectType修改
@@ -78,6 +84,7 @@ export default {
   height: 17vh;
   img {
     width: 27vw;
+    height: 27vw;
     display: block;
     float: left;
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="foodItemRecommend">
-    <img :src="foodItem.pic_url" />
+    <img :src="getPicUrl(foodItem.pic_url)" />
     <div class="foodData">
       <h1>{{foodItem.foodName}}</h1>
       <div>
@@ -26,6 +26,8 @@
 
 <script>
 import { mapGetters } from "vuex";
+import {qiniuDomain} from "../../API/qiniuDomain"
+
 export default {
   props: {
     foodItem: {
@@ -61,6 +63,9 @@ export default {
     }
   },
   methods: {
+    getPicUrl(pic_url) {
+      return "http://" + qiniuDomain + "/" + pic_url;
+    },
     handleChange(value) {
       this.currentBuyNums = value;
       //通知父组件selectType修改
