@@ -16,7 +16,8 @@
     "vant": "D:\\webs\\��ѧweb\\webʵս��Ŀ\\��ҵ���>\"D:\\\\node.exe\"  \"D:\\\\node_modules\\npm\\bin\\npm-cli.js\" config get save-prefix \r\n^2.4.1",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
-    "vuex": "D:\\webs\\��ѧweb\\webʵս��Ŀ\\��ҵ���>\"D:\\\\node.exe\"  \"D:\\\\node_modules\\npm\\bin\\npm-cli.js\" config get save-prefix \r\n^3.1.2"
+    "vuex": "D:\\webs\\��ѧweb\\webʵս��Ŀ\\��ҵ���>\"D:\\\\node.exe\"  \"D:\\\\node_modules\\npm\\bin\\npm-cli.js\" config get save-prefix \r\n^3.1.2",
+    "vuex-along": "D:\\webs\\��ѧweb\\webʵս��Ŀ\\��ҵ���>\"D:\\\\node.exe\"  \"D:\\\\node_modules\\npm\\bin\\npm-cli.js\" config get save-prefix \r\n^1.2.10"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
