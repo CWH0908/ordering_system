@@ -5,7 +5,7 @@
         <div class="itemDiv">
           <!-- 店铺头像 -->
           <aside>
-            <img :src="item.pic_url" class="itemPic" />
+            <img :src="getPicUrl(item.pic_url)" class="itemPic" />
           </aside>
           <div class="rightPart">
             <!-- 店铺名 -->
@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import {qiniuDomain} from "../../API/qiniuDomain"
 export default {
   props: {
     shopList: {
@@ -46,6 +47,9 @@ export default {
     }
   },
   methods: {
+    getPicUrl(pic_url) {
+      return "http://" + qiniuDomain + "/" + pic_url;
+    },
     selectShop(item) {
       // alert("选择了店铺ID："+item.shopID)
       this.$router.push({

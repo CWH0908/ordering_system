@@ -25,11 +25,12 @@
 
 <script>
 import addressList from "../base/addressList";
-import {mapGetters} from "vuex"
+import { mapGetters } from "vuex";
 export default {
   created() {
     this.userAccount = this.currentUser.userAccount;
-    this.pic_url = "http://49.235.92.173:70/graduationDesign_images/defaultHeadImg.jpg";
+    this.pic_url =
+      "http://49.235.92.173:70/graduationDesign_images/defaultHeadImg.jpg";
   },
   data() {
     return {
@@ -38,10 +39,14 @@ export default {
       activeNames: ["1"] //地址折叠面板
     };
   },
+  methods: {
+    //个人中心图片尚未使用七牛云
+    getPicUrl(pic_url) {
+      return "http://" + qiniuDomain + "/" + pic_url;
+    }
+  },
   computed: {
-    ...mapGetters([
-      "currentUser"
-    ])
+    ...mapGetters(["currentUser"])
   },
   filters: {
     //隐藏手机信息，待完善

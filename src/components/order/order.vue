@@ -6,7 +6,7 @@
         <li class="header">我的订单</li>
         <li v-for="(item,index) in orderData" :key="index" @click="openDetails(item)">
           <div class="orderItem">
-            <img :src="item.shopInfo.pic_url" alt />
+            <img :src="getPicUrl(item.shopInfo.pic_url)" alt />
             <div class="rightPart">
               <div class="shopInfo">
                 <h3>{{item.shopInfo.shopName}}</h3>
@@ -50,6 +50,7 @@
 import { Toast } from "vant";
 import { mapGetters } from "vuex";
 import orderDetails from "../order/orderDetails";
+import {qiniuDomain} from "../../API/qiniuDomain"
 export default {
   data() {
     return {
@@ -58,6 +59,9 @@ export default {
     };
   },
   methods: {
+    getPicUrl(pic_url) {
+      return "http://" + qiniuDomain + "/" + pic_url;
+    },
     //打开订单详情
     openDetails(item) {
       this.orderDataItem = item;

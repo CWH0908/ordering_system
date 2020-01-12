@@ -8,7 +8,7 @@
       </div>
       <div class="header">
         <div>
-          <img class="shopPic" :src="shopInfo.pic_url" />
+          <img class="shopPic" :src="getPicUrl(shopInfo.pic_url)" />
         </div>
         <h1 class="shopName">{{shopInfo.shopName}}</h1>
         <div class="shopInfo">
@@ -130,7 +130,6 @@ export default {
   //     }
   //   },
   methods: {
-    //商家头像图片尚未使用七牛云
     getPicUrl(pic_url) {
       return "http://" + qiniuDomain + "/" + pic_url;
     },

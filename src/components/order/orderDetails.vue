@@ -6,7 +6,7 @@
           <li class="headerLi">{{orderDataItem.shopInfo.shopName}}</li>
           <li class="foodLi" v-for="(foodItem,index) in orderDataItem.foodList" :key="index">
             <div>
-              <img :src="foodItem.foodData.pic_url" alt />
+              <img :src="getPicUrl(foodItem.foodData.pic_url)" alt />
               <p class="name">{{foodItem.foodData.foodName}}</p>
               <p class="count">
                 <span>x</span>
@@ -77,6 +77,7 @@
 </template>
 
 <script>
+import {qiniuDomain} from "../../API/qiniuDomain"
 export default {
   props: {
     orderDataItem: {
@@ -85,6 +86,9 @@ export default {
     }
   },
   methods: {
+    getPicUrl(pic_url) {
+      return "http://" + qiniuDomain + "/" + pic_url;
+    },
     closeDetails() {
       this.$emit("closeDetails");
     }
