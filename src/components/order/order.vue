@@ -82,9 +82,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["currentUser"]),
-    orderData() {
-      return this.currentUser.orderData;
+    ...mapGetters(["currentUser","currentOrderData"]),
+    // orderData() {
+    //   return this.currentUser.orderData;
+    // }
+    orderData(){
+      return this.currentOrderData
     }
   },
   components: {
@@ -120,6 +123,7 @@ export default {
       width: 90%;
       margin: 0 auto;
       position: fixed;
+      z-index: 999;
       top: 1rem;
       left: 0;
       right: 0;

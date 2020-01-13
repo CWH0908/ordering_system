@@ -22,6 +22,16 @@ const mutations = {
   set_currentUser(state, currentUser) {
     state.currentUser = currentUser;
   },
+
+  //设置当前用户的订单信息
+  // set_currentOrderData(state, newOrderItem) {
+  //   let tempDataArr = JSON.parse(JSON.stringify(state.currentOrderData)); //先获取旧的订单数组
+  //   tempDataArr.push(newOrderItem)
+  //   state.currentOrderData = tempDataArr
+  // }
+  set_currentOrderData(state, newOrderArr) {
+    state.currentOrderData = newOrderArr
+  }
 }
 
 export default mutations;

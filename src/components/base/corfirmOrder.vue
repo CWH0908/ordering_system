@@ -78,6 +78,7 @@ import addressList from "../base/addressList";
 import { updateOrder } from "../../API/checkUser";
 import { Toast } from "vant";
 import { qiniuDomain } from "../../API/qiniuDomain"; //七牛云外链
+import { saveOrder } from "../../API/getOrder";
 
 export default {
   created() {
@@ -99,7 +100,8 @@ export default {
   methods: {
     ...mapMutations({
       set_all_shop_car: "set_all_shop_car",
-      set_currentUser: "set_currentUser"
+      set_currentUser: "set_currentUser",
+      set_currentOrderData: "set_currentOrderData"
     }),
     getPicUrl(pic_url) {
       return "http://" + qiniuDomain + "/" + pic_url;
@@ -149,18 +151,25 @@ export default {
               newObj.addressData = this.sendAddress;
               newObj.payType = this.payRadio;
               newObj.buyTime = this.getCurrentTime();
-              this.currentUser.orderData.push(newObj);
-              this.set_currentUser(this.currentUser);
+              // this.currentUser.orderData.push(newObj);
+              //在vuex中更新订单信息
+              // this.set_currentUser(this.currentUser);
+              this.currentOrderData.push(newObj);
+              this.set_currentOrderData(this.currentOrderData);
+
+              //在数据库更新数据
+              saveOrder(newObj);
 
               //存储好订单后清空此店铺购物车
               shopItem.shopCar = [];
             }
           });
-          //数据库更新数据
-          updateOrder(
-            this.currentUser.userAccount,
-            JSON.stringify(this.currentUser.orderData)
-          );
+          // //在数据库更新数据
+          // saveOrder(newObj)
+          // updateOrder(
+          //   this.currentUser.userAccount,
+          //   JSON.stringify(this.currentUser.orderData)
+          // );
         }, 3000);
 
         //跳转到订单组件
@@ -191,7 +200,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["all_shop_car", "currentUser"]),
+    ...mapGetters(["all_shop_car", "currentUser","currentOrderData"]),
     //默认配送地址
     // 此方式绑定了currentUser值，无法通过点击地址信息来设置，因此换成普通的初始化方式
     // sendAddress: {

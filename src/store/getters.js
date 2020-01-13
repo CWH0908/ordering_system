@@ -18,3 +18,7 @@ export const all_shop_car = (state) => {
 export const currentUser = (state) => {
   return state.currentUser;
 }
+
+export const currentOrderData = (state) => {
+  return state.currentOrderData
+}

@@ -42,6 +42,7 @@
 
 <script>
 import { login, register, inputRegister } from "../../API/checkUser";
+import { getOrder } from "../../API/getOrder";
 import { Toast } from "vant";
 import { mapMutations } from "vuex";
 export default {
@@ -62,7 +63,6 @@ export default {
         let temp = await login(this.inputAccount, this.inputPwd);
         if (temp) {
           this.userData = temp;
-          // localStorage.setItem("currentUser", JSON.stringify(temp)); //在本地设置当前用户信息(序列化后存储)
           this.set_currentUser(temp); //将从数据库中返回的数据保存在vuex中
 
           const toast = Toast.loading({
@@ -85,6 +85,14 @@ export default {
           const routerTimer = setTimeout(() => {
             this.$router.push({ path: "/main/home" });
           }, 3000);
+
+          //确定了用户身份后，根据用户的AccountID去order_datas文档查找属于该用户的订单
+          let orderData = await getOrder(this.inputAccount);
+          this.set_currentOrderData(orderData);
+          // orderData.forEach(item => {
+          //   //存到当前的订单数据中
+          //   this.set_currentOrderData(item);
+          // });
         } else {
           Toast("账号密码错误");
         }
@@ -115,7 +123,8 @@ export default {
 
     //将用户信息保存在vuex中，实现用户信息中的购物车数据实时更新
     ...mapMutations({
-      set_currentUser: "set_currentUser"
+      set_currentUser: "set_currentUser",
+      set_currentOrderData: "set_currentOrderData"
     })
   }
 };
