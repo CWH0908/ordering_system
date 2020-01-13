@@ -93,6 +93,7 @@ export default {
     }
     .userInfoPart {
       background: white;
+      // background-color: rgba(255, 255, 255, 0.4);
       margin: 0 auto;
       width: 88%;
       padding: 10px 1rem;

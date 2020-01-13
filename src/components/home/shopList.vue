@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import {qiniuDomain} from "../../API/qiniuDomain"
+import { qiniuDomain } from "../../API/qiniuDomain";
 export default {
   props: {
     shopList: {
@@ -76,7 +76,8 @@ export default {
           width: 20%;
           display: inline-block;
           .itemPic {
-            width: 100%;
+            width: 20vw;
+            height: 20vw;
           }
         }
         .rightPart {

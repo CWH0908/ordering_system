@@ -33,9 +33,9 @@ import addressEdit from "../base/addressEdit";
 import { mapGetters } from "vuex";
 export default {
   created() {
-    this.addressList = JSON.parse(
-      localStorage.getItem("currentUser")
-    ).addressData;
+    // this.addressList = JSON.parse(
+    //   localStorage.getItem("currentUser")
+    // ).addressData;
   },
   mounted() {
     // document

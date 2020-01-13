@@ -77,7 +77,7 @@ import { mapMutations, mapGetters } from "vuex";
 import addressList from "../base/addressList";
 import { updateOrder } from "../../API/checkUser";
 import { Toast } from "vant";
-import {qiniuDomain} from "../../API/qiniuDomain";//七牛云外链
+import { qiniuDomain } from "../../API/qiniuDomain"; //七牛云外链
 
 export default {
   created() {
@@ -116,54 +116,58 @@ export default {
     },
     //结算按钮
     settlement() {
-      const toast = Toast.loading({
-        duration: 0, // 持续展示 toast
-        forbidClick: true,
-        message: "正在支付"
-      });
-
-      let second = 3;
-      const timer = setInterval(() => {
-        second--;
-        if (second) {
-          toast.message = `正在支付`;
-        } else {
-          clearInterval(timer);
-          // 手动清除 Toast
-          Toast.clear();
-        }
-      }, 1000);
-      setTimeout(() => {
-        Toast("支付成功");
-        //结算成功将vuex中currentUser的当前购物车addressData特定店铺清空，同时在currentUser的orderData中新增一条数据
-        this.all_shop_car.forEach(shopItem => {
-          if (shopItem.shopID == this.shopID) {
-            let newObj = {};
-            // newObj.shopID = this.shopID;
-            newObj.shopInfo = this.shopInfo;
-            newObj.userAccount = this.currentUser.userAccount;
-            newObj.foodList = shopItem.shopCar;
-            newObj.addressData = this.sendAddress;
-            newObj.payType = this.payRadio;
-            newObj.buyTime = this.getCurrentTime();
-            this.currentUser.orderData.push(newObj);
-            this.set_currentUser(this.currentUser);
-
-            //存储好订单后清空此店铺购物车
-            shopItem.shopCar = [];
-          }
+      if (JSON.stringify(this.sendAddress) == "{}") {
+        Toast("请添加收货地址");
+      } else {
+        const toast = Toast.loading({
+          duration: 0, // 持续展示 toast
+          forbidClick: true,
+          message: "正在支付"
         });
-        //数据库更新数据
-        updateOrder(
-          this.currentUser.userAccount,
-          JSON.stringify(this.currentUser.orderData)
-        );
-      }, 3000);
 
-      //跳转到订单组件
-      setTimeout(() => {
-        this.$router.push({ path: "/main/order" });
-      }, 4000);
+        let second = 3;
+        const timer = setInterval(() => {
+          second--;
+          if (second) {
+            toast.message = `正在支付`;
+          } else {
+            clearInterval(timer);
+            // 手动清除 Toast
+            Toast.clear();
+          }
+        }, 1000);
+        setTimeout(() => {
+          Toast("支付成功");
+          //结算成功将vuex中currentUser的当前购物车addressData特定店铺清空，同时在currentUser的orderData中新增一条数据
+          this.all_shop_car.forEach(shopItem => {
+            if (shopItem.shopID == this.shopID) {
+              let newObj = {};
+              // newObj.shopID = this.shopID;
+              newObj.shopInfo = this.shopInfo;
+              newObj.userAccount = this.currentUser.userAccount;
+              newObj.foodList = shopItem.shopCar;
+              newObj.addressData = this.sendAddress;
+              newObj.payType = this.payRadio;
+              newObj.buyTime = this.getCurrentTime();
+              this.currentUser.orderData.push(newObj);
+              this.set_currentUser(this.currentUser);
+
+              //存储好订单后清空此店铺购物车
+              shopItem.shopCar = [];
+            }
+          });
+          //数据库更新数据
+          updateOrder(
+            this.currentUser.userAccount,
+            JSON.stringify(this.currentUser.orderData)
+          );
+        }, 3000);
+
+        //跳转到订单组件
+        setTimeout(() => {
+          this.$router.push({ path: "/main/order" });
+        }, 4000);
+      }
     },
     //获取当前时间
     getCurrentTime() {

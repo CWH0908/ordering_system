@@ -2,8 +2,10 @@
   <div class="order">
     <div class="container">
       <div v-show="currentUser.orderData.length==0" class="noOrder">还没有订单呢，快去选购吧~</div>
-      <ul>
-        <li class="header">我的订单</li>
+      <div class="header">我的订单</div>
+
+      <ul class="outerUl">
+        <!-- <li class="header">我的订单</li> -->
         <li v-for="(item,index) in orderData" :key="index" @click="openDetails(item)">
           <div class="orderItem">
             <img :src="getPicUrl(item.shopInfo.pic_url)" alt />
@@ -50,7 +52,7 @@
 import { Toast } from "vant";
 import { mapGetters } from "vuex";
 import orderDetails from "../order/orderDetails";
-import {qiniuDomain} from "../../API/qiniuDomain"
+import { qiniuDomain } from "../../API/qiniuDomain";
 export default {
   data() {
     return {
@@ -94,7 +96,9 @@ export default {
 <style lang="less" scoped>
 .order {
   .container {
-    height: 100%;
+    min-height: 100vh;
+    padding-top: 4rem;
+    padding-bottom: 10vh;
     background: -webkit-gradient(
       linear,
       0 0,
@@ -113,12 +117,21 @@ export default {
       transform: translate(-50%, -50%);
     }
     .header {
+      width: 90%;
+      margin: 0 auto;
+      position: fixed;
+      top: 1rem;
+      left: 0;
+      right: 0;
       background-color: white;
       height: 6vh;
       line-height: 6vh;
       text-align: center;
       font-size: 1.2rem;
       border-radius: 24px;
+    }
+    .outerUl {
+      // padding-top: 10rem;
     }
     ul {
       padding-top: 1rem;
@@ -127,7 +140,7 @@ export default {
         margin: 0 auto;
         margin-bottom: 1rem;
         .orderItem {
-          background-color: white;
+          background-color: rgba(255, 255, 255, 0.4);
           padding: 1rem 0.5rem;
           border-radius: 10px;
           img {
