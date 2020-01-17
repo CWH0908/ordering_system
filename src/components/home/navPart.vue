@@ -75,6 +75,7 @@ export default {
       justify-content: space-between;
       flex-flow: wrap;
       .navItem {
+        border-radius: 10px;
         width: 33%;
         text-align: center;
         padding-top: 1rem;

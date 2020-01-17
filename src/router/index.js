@@ -4,7 +4,8 @@ import HelloWorld from '@/components/HelloWorld'
 import sign from "../components/base/sign.vue"
 import main from "../components/base/main.vue"
 import home from "../components/home/home.vue"
-import test from "../components/base/test.vue"
+import testWebSocket from "../components/test/testWebSocket.vue"
+import testEcharts from "../components/test/testEcharts.vue"
 
 Vue.use(Router)
 
@@ -14,10 +15,17 @@ export default new Router({
       redirect: '/sign'
     },
     {
-      path: '/test',
-      name: 'test',
+      path: '/testWebSocket',
+      name: 'testWebSocket',
       components: {
-        test
+        testWebSocket
+      },
+    },
+    {
+      path: '/testEcharts',
+      name: 'testEcharts',
+      components: {
+        testEcharts
       },
     },
     {

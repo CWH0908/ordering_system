@@ -2,7 +2,8 @@
   <div id="app">
     <router-view name="sign"></router-view>
     <router-view name="main"></router-view>
-    <router-view name="test"></router-view>
+    <router-view name="testWebSocket"></router-view>
+    <router-view name="testEcharts"></router-view>
   </div>
 </template>
 

@@ -1,11 +1,14 @@
 <template>
   <div class="foodList">
     <div class="container">
+      <!-- 返回按钮 -->
       <div class="goBackPart">
         <span @click="goBack">
           <i class="el-icon-arrow-left"></i>
         </span>
       </div>
+
+      <!-- 头部栏 -->
       <div class="header">
         <div>
           <img class="shopPic" :src="getPicUrl(shopInfo.pic_url)" />
@@ -14,9 +17,17 @@
         <div class="shopInfo">
           <span>评价：{{shopInfo.rateValue}} 分</span>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <span>月售：{{shopInfo.saleTimes}} 份</span>
+          <span>已售：{{shopInfo.saleTimes}} 份</span>
+          <el-button
+            @click="toggleShopDetail"
+            class="shopDetailButton"
+            type="primary"
+            size="mini"
+          >详情</el-button>
         </div>
       </div>
+
+      <!-- 主体部分 -->
       <div class="main">
         <div class="shopRecommendPart" v-if="recommendFoodList.length>0">
           <h3>商家推荐</h3>
@@ -63,8 +74,57 @@
         </div>
       </div>
     </div>
+
+    <!-- 店铺详情板块 -->
+    <div class="shopDetails" v-show="isShowShopDetails" @click.self="toggleShopDetail">
+      <div class="info">
+        <p>
+          <span>店铺名称</span>
+          <span>{{this.shopInfo.shopName}}</span>
+        </p>
+        <p>
+          <span>店铺类型</span>
+          <span>{{this.shopInfo.mallType|formatMallType}}</span>
+        </p>
+        <p>
+          <span>营业时间</span>
+          <span>{{this.shopInfo.openTime}} — — {{this.shopInfo.closeTime}}</span>
+        </p>
+        <p>
+          <span>已售出</span>
+          <span>{{this.shopInfo.saleTimes}}&nbsp;份</span>
+        </p>
+        <p>
+          <span>用户评分</span>
+          <span>
+            <el-rate style="display:inline-block;" v-model="shopInfo.rateValue" disabled></el-rate>
+          </span>
+        </p>
+        <p>
+          <span>起送价</span>
+          <span>￥&nbsp;{{this.shopInfo.startFee}}</span>
+        </p>
+        <p>
+          <span>配送费</span>
+          <span>￥&nbsp;{{this.shopInfo.sendFee}}</span>
+        </p>
+
+        <p>
+          <span>联系方式</span>
+          <span>{{this.shopInfo.phone}}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="fullDiv" v-if="isClose">
+      <!-- 打样时候使用的背景板 -->
+    </div>
+
+    <!-- 购物车板块 -->
     <shopCar :shopInfo="shopInfo" @click.native="toggleShopCar" @goSettlement="goSettlement"></shopCar>
-    <shopCarInfo v-show="isShowShopCarInfo" :shopID="shopID"></shopCarInfo>
+    <shopCarInfo v-show="isShowShopCarInfo" :shopID="shopID" @toggleShopCar="toggleShopCar"></shopCarInfo>
+
+    <!-- 确认订单板块 -->
     <transition name="slide-left">
       <router-view name="confirmOredr"></router-view>
     </transition>
@@ -80,6 +140,7 @@ import shopCar from "../base/shopCar";
 import shopCarInfo from "../base/shopCarInfo";
 import corfirmOrder from "../base/corfirmOrder";
 import { qiniuDomain } from "../../API/qiniuDomain";
+import { Toast } from "vant";
 let that; //全局this对象
 export default {
   beforeCreate() {
@@ -90,6 +151,11 @@ export default {
     this.shopID = this.$route.params.id; //从路由参数中获取当前店铺ID，然后使用此ID请求该店铺下的菜品信息
     this._getFoodList();
     this._getShoplist();
+    setInterval(() => {
+      let time = new Date();
+      this.currentTime =
+        this.addZero(time.getHours()) + ":" + this.addZero(time.getMinutes());
+    }, 1000);
   },
   data() {
     return {
@@ -101,7 +167,10 @@ export default {
       groupFoodList: {}, //按菜品类型进行分类存储
       indexList: [], //菜品类型索引列表
       stickyHeight: "height:100vh", //粘性定位的元素高度，根据foodList数据动态获取
-      isShowShopCarInfo: false //是否显示购物车详情组件
+      isShowShopCarInfo: false, //是否显示购物车详情组件
+      isShowShopDetails: false, //是否显示店铺详情
+      currentTime: "", //当前时间
+      isClose: false //当前是否关门
     };
   },
   //此filters方式已废弃
@@ -130,6 +199,10 @@ export default {
   //     }
   //   },
   methods: {
+    //修改购物车信息(当前店铺)
+    ...mapMutations({
+      set_all_shop_car: "set_all_shop_car"
+    }),
     getPicUrl(pic_url) {
       return "http://" + qiniuDomain + "/" + pic_url;
     },
@@ -232,14 +305,32 @@ export default {
         name: "confirmOredr"
       });
     },
-    //修改购物车信息(当前店铺)
-    ...mapMutations({
-      set_all_shop_car: "set_all_shop_car"
-    })
+    //控制店铺详情的显隐
+    toggleShopDetail() {
+      this.isShowShopDetails = !this.isShowShopDetails;
+      if (this.isShowShopDetails) {
+        //foodList禁止滚动
+        document
+          .getElementsByClassName("foodList")[0]
+          .addEventListener("touchmove", this.preventDOM, {
+            passive: false
+          }); //passive 参数不能省略，用来兼容ios和android
+      } else {
+        document
+          .getElementsByClassName("foodList")[0]
+          .removeEventListener("touchmove", this.preventDOM, {
+            passive: false
+          }); //passive 参数不能省略，用来兼容ios和android
+      }
+    },
+    //补0函数
+    addZero(time) {
+      return time < 10 ? "0" + time : time;
+    }
   },
   computed: {
     //所有购物车信息，数组
-    ...mapGetters(["all_shop_car"])
+    ...mapGetters(["all_shop_car"]),
   },
   watch: {
     allFoodList(newVal) {
@@ -285,6 +376,77 @@ export default {
 
       //得出粘性布局的高度,每个foodItem的高度设为17vh
       this.stickyHeight = "height:" + newVal.length * 17 + "vh";
+    },
+    currentTime(newVal) {
+      let currentHour = newVal.split(":")[0];
+      let currentMinut = newVal.split(":")[1];
+      //将17：05 转成1705的数值形式，与开关门时间进行比较
+      let currentTimeNumber = Number(currentHour + currentMinut);
+
+      let openHour = this.shopInfo.openTime.split(":")[0];
+      let openMinut = this.shopInfo.openTime.split(":")[1];
+      let openTimeNumber = Number(openHour + openMinut);
+
+      let closeHour = this.shopInfo.closeTime.split(":")[0];
+      let closeMinut = this.shopInfo.closeTime.split(":")[1];
+      let closeTimeNumber = Number(closeHour + closeMinut);
+
+      if (
+        currentTimeNumber >= openTimeNumber &&
+        currentTimeNumber < closeTimeNumber
+      ) {
+        //正常营业
+        // console.log("正常营业");
+      } else {
+        this.isClose = false;
+        const toast = Toast.loading({
+          duration: 0, // 持续展示 toast
+          forbidClick: true,
+          message: "店铺打烊了~正在返回首页"
+        });
+
+        let second = 3;
+        const timer = setInterval(() => {
+          second--;
+          if (second) {
+            toast.message = `店铺打烊了~正在返回首页`;
+          } else {
+            clearInterval(timer);
+            // 手动清除 Toast
+            Toast.clear();
+          }
+        }, 1000);
+        setTimeout(() => {
+          this.$router.push("/main/home");
+        }, 3000);
+      }
+    }
+  },
+  filters: {
+    formatMallType(mallType) {
+      switch (mallType) {
+        case "Noodles":
+          return "粥粉面饭";
+          break;
+        case "Popular":
+          return "热门畅销";
+          break;
+        case "Fruit":
+          return "水果甜品";
+          break;
+        case "Drinks":
+          return "奶茶饮料";
+          break;
+        case "Barbecue":
+          return "爆香烧烤";
+          break;
+        case "Hamburger":
+          return "汉堡披萨";
+          break;
+        default:
+          return "暂未定义";
+          break;
+      }
     }
   },
   components: {
@@ -313,6 +475,7 @@ export default {
     .goBackPart {
       position: fixed;
       top: 0;
+      color: white;
       height: 2vh;
       width: 100%;
       height: 6vh;
@@ -339,9 +502,15 @@ export default {
         padding: 0.3rem 0;
       }
       .shopInfo {
+        position: relative;
         color: gray;
         font-size: 0.8rem;
         span {
+        }
+        .shopDetailButton {
+          position: absolute;
+          right: 0.5rem;
+          bottom: -0.1rem;
         }
       }
     }
@@ -412,6 +581,45 @@ export default {
         }
       }
     }
+  }
+  .shopDetails {
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.8);
+    .info {
+      width: 90%;
+      height: 46vh;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      background-color: white;
+      border-radius: 20px;
+      padding: 0.5rem;
+      p {
+        line-height: 2;
+        font-size: 1.2rem;
+        color: #606266;
+        span:nth-child(1) {
+          display: inline-block;
+          padding-left: 1rem;
+          width: 40%;
+        }
+      }
+    }
+  }
+  .fullDiv {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 300vh;
+    background-color: rgba(0, 0, 0, 0.4);
   }
 }
 </style>

@@ -30,7 +30,7 @@ export default {
     initWebSocket() {
       //初始化weosocket
       // 以    ws://服务器地址/webSocket  路由的形式建立连接
-      const wsuri = "ws://127.0.0.1:8081/test";
+      const wsuri = "ws://127.0.0.1:8081/test/6666666666";
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = this.websocketonmessage;
       this.websock.onopen = this.websocketonopen;

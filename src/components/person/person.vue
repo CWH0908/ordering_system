@@ -1,7 +1,9 @@
 <template>
   <div class="person">
     <div class="container">
-      <div class="header">个人中心</div>
+      <div class="headerPart">
+        <div class="header">个人中心</div>
+      </div>
       <div class="userInfoPart">
         <img :src="pic_url" alt />
         <div>
@@ -71,8 +73,9 @@ export default {
 <style lang="less" scoped>
 .person {
   .container {
-    height: 100vh;
-    padding-top: 1rem;
+    height: 80vh;
+    padding-bottom: 20vh;
+    padding-top: 5rem;
     background: -webkit-gradient(
       linear,
       0 0,
@@ -80,16 +83,23 @@ export default {
       from(#4169e1),
       to(#b0c4de)
     );
-    .header {
-      background-color: white;
-      width: 90%;
-      margin: 0 auto;
-      height: 6vh;
-      line-height: 6vh;
-      text-align: center;
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-      border-radius: 24px;
+    .headerPart {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 12vh;
+      background: #4169e1;
+      .header {
+        background-color: white;
+        width: 90%;
+        margin: 0 auto;
+        height: 6vh;
+        line-height: 6vh;
+        text-align: center;
+        font-size: 1.2rem;
+        margin-top: 1rem;
+        border-radius: 24px;
+      }
     }
     .userInfoPart {
       background: white;

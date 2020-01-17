@@ -1,7 +1,7 @@
 <template>
   <div class="order">
     <div class="container">
-      <div v-show="currentUser.orderData.length==0" class="noOrder">还没有订单呢，快去选购吧~</div>
+      <div v-show="currentOrderData.length==0" class="noOrder">还没有订单呢，快去选购吧~</div>
       <div class="header">我的订单</div>
 
       <ul class="outerUl">
@@ -33,7 +33,7 @@
               </div>
             </div>
             <div class="operation">
-              <van-button type="danger" size="small">取消订单</van-button>
+              <!-- <van-button type="danger" size="small">取消订单</van-button> -->
               <van-button type="info" size="small" @click.stop="goShop(item)">再叫一单</van-button>
             </div>
           </div>

@@ -30,7 +30,7 @@ import {
   AddressEdit,
   Area,
   Popup,
-  Field 
+  Field
 } from 'vant';
 
 Vue.use(IndexBar).use(IndexAnchor);
@@ -46,6 +46,15 @@ Vue.use(Button)
 Vue.use(Popup)
 Vue.use(Field)
 Vue.use(Vant);
+
+//按需引入 echarts
+import ECharts from 'vue-echarts'
+//折线图
+import 'echarts/lib/chart/line'
+// 柱状图
+import 'echarts/lib/chart/bar';
+Vue.component('chart', ECharts)
+
 
 
 //引入element

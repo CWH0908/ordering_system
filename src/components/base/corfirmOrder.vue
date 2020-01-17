@@ -145,6 +145,7 @@ export default {
             if (shopItem.shopID == this.shopID) {
               let newObj = {};
               // newObj.shopID = this.shopID;
+              newObj.shopID = this.shopID;
               newObj.shopInfo = this.shopInfo;
               newObj.userAccount = this.currentUser.userAccount;
               newObj.foodList = shopItem.shopCar;
@@ -200,7 +201,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["all_shop_car", "currentUser","currentOrderData"]),
+    ...mapGetters(["all_shop_car", "currentUser", "currentOrderData"]),
     //默认配送地址
     // 此方式绑定了currentUser值，无法通过点击地址信息来设置，因此换成普通的初始化方式
     // sendAddress: {
@@ -264,6 +265,7 @@ export default {
       .goBackPart {
         // position: fixed;
         // top: 0;
+        color: white;
         height: 2vh;
         width: 100%;
         height: 8vh;

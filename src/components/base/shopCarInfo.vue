@@ -1,5 +1,5 @@
 <template>
-  <div class="backgroundDIV">
+  <div class="backgroundDIV" @click.self="toggleShopCar">
     <div class="shopCarInfo">
       <ul>
         <li class="text">已选商品</li>
@@ -110,7 +110,12 @@ export default {
     },
     ...mapMutations({
       set_all_shop_car: "set_all_shop_car"
-    })
+    }),
+    //抛出关闭详细购物车的函数
+    toggleShopCar(){
+      this.$emit("toggleShopCar")
+      // alert("抛出关闭");
+    }
   },
   computed: {
     ...mapGetters(["all_shop_car"]),
