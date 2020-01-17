@@ -117,7 +117,7 @@
     </div>
 
     <div class="fullDiv" v-if="isClose">
-      <!-- 打样时候使用的背景板 -->
+      <!-- 打烊时候使用的背景板 -->
     </div>
 
     <!-- 购物车板块 -->
@@ -141,6 +141,8 @@ import shopCarInfo from "../base/shopCarInfo";
 import corfirmOrder from "../base/corfirmOrder";
 import { qiniuDomain } from "../../API/qiniuDomain";
 import { Toast } from "vant";
+import { webSocketUrl } from "../../API/webSocketUrl";
+
 let that; //全局this对象
 export default {
   beforeCreate() {
@@ -156,6 +158,10 @@ export default {
       this.currentTime =
         this.addZero(time.getHours()) + ":" + this.addZero(time.getMinutes());
     }, 1000);
+    this.connectWebScket(); //创建webSocket连接
+  },
+  destroyed() {
+    this.closeConnect(); //关闭webSocket连接
   },
   data() {
     return {
@@ -170,7 +176,10 @@ export default {
       isShowShopCarInfo: false, //是否显示购物车详情组件
       isShowShopDetails: false, //是否显示店铺详情
       currentTime: "", //当前时间
-      isClose: false //当前是否关门
+      isClose: false, //当前是否关门
+      clickSure: false, //倒计时结束
+      websock: null, //用于初始化为一个webSocket实例
+      requireData: "接收到服务端发送的数据:" //用于接收服务器返回的数据
     };
   },
   //此filters方式已废弃
@@ -326,11 +335,58 @@ export default {
     //补0函数
     addZero(time) {
       return time < 10 ? "0" + time : time;
+    },
+
+    //创建webSocket连接用于接收商家最新的信息*******************************8
+    //连接到webSocket
+    connectWebScket() {
+      this.initWebSocket();
+    },
+    //关闭连接
+    closeConnect() {
+      this.websock.close();
+    },
+    initWebSocket() {
+      //初始化weosocket
+      // 以    ws://服务器地址/webSocket  路由的形式建立连接
+      this.websock = new WebSocket(webSocketUrl + this.shopID);
+      this.websock.onmessage = this.websocketonmessage;
+      this.websock.onopen = this.websocketonopen;
+      this.websock.onerror = this.websocketonerror;
+      this.websock.onclose = this.websocketclose;
+    },
+    //连接建立之后执行send方法发送数据
+    websocketonopen() {
+      // let actions = {
+      //   shopID: "00000"
+      // };
+      // this.websocketsend(JSON.stringify(actions));
+    },
+    //连接建立失败重连
+    websocketonerror() {
+      this.initWebSocket();
+    },
+    //接收服务端数据
+    websocketonmessage(e) {
+      const redata = e.data;
+      this.requireData = this.requireData + "\n" + redata;
+      console.log("接收到服务端发送的数据：", redata);
+      if (redata == "当前店铺更新信息") {
+        this._getShoplist(); //重新请求店铺信息
+      }
+    },
+    //客户端发送数据
+    websocketsend(Data) {
+      this.websock.send(Data);
+    },
+    //关闭webSocket连接
+    websocketclose(e) {
+      console.log("关闭webSocket连接：", e);
     }
   },
   computed: {
     //所有购物车信息，数组
-    ...mapGetters(["all_shop_car"]),
+    ...mapGetters(["all_shop_car"])
   },
   watch: {
     allFoodList(newVal) {
@@ -398,7 +454,7 @@ export default {
         //正常营业
         // console.log("正常营业");
       } else {
-        this.isClose = false;
+        this.isClose = true; //显示遮挡背景div
         const toast = Toast.loading({
           duration: 0, // 持续展示 toast
           forbidClick: true,
@@ -410,15 +466,46 @@ export default {
           second--;
           if (second) {
             toast.message = `店铺打烊了~正在返回首页`;
+            if (second == 1) {
+              this.clickSure = true;
+            }
           } else {
             clearInterval(timer);
             // 手动清除 Toast
             Toast.clear();
           }
         }, 1000);
-        setTimeout(() => {
-          this.$router.push("/main/home");
-        }, 3000);
+      }
+    },
+    clickSure(newVal) {
+      if (newVal) {
+        this.$router.push("/main/home");
+      }
+    },
+    shopInfo(newVal) {
+      if (newVal.isClose) {
+        //本店关门
+        this.isClose = true; //显示遮挡背景div
+        const toast = Toast.loading({
+          duration: 0, // 持续展示 toast
+          forbidClick: true,
+          message: "店铺临时歇业\n正在返回首页"
+        });
+
+        let second = 3;
+        const timer = setInterval(() => {
+          second--;
+          if (second) {
+            toast.message = `店铺临时歇业\n正在返回首页`;
+            if (second == 1) {
+              this.clickSure = true;
+            }
+          } else {
+            clearInterval(timer);
+            // 手动清除 Toast
+            Toast.clear();
+          }
+        }, 1000);
       }
     }
   },
@@ -614,6 +701,7 @@ export default {
     }
   }
   .fullDiv {
+    z-index: 999;
     position: fixed;
     top: 0;
     left: 0;
