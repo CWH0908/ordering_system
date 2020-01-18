@@ -155,6 +155,8 @@ export default {
               newObj.buyTime = this.getCurrentTime();
               newObj.state = "waiting"; //订单状态为等待中
               newObj.orderID = this.shopID + "_" + new Date().getTime(); //订单ID
+              newObj.rateValue = 0; //评分
+              newObj.comment = ""; //评价
               // this.currentUser.orderData.push(newObj);
               //在vuex中更新订单信息
               // this.set_currentUser(this.currentUser);

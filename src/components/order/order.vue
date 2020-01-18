@@ -53,17 +53,46 @@
                 type="danger"
                 loading-text="申请取消中"
               />
+              <van-button
+                type="primary"
+                size="small"
+                v-if="item.state=='arrive'&&item.comment==''"
+                @click.stop="openCommentBox(item)"
+              >评论</van-button>
+              <van-button
+                type="primary"
+                size="small"
+                v-if="item.comment!=''&&item.comment!=undefined"
+              >已评论</van-button>
               <van-button disabled type="info" size="small" v-if="item.state=='arrive'">已送达</van-button>
               <van-button type="info" size="small" @click.stop="goShop(item)">再叫一单</van-button>
             </div>
           </div>
         </li>
       </ul>
+
+      <!-- 订单详情 -->
       <orderDetails
         :orderDataItem="orderDataItem"
         v-if="isShowDetails"
         @closeDetails="closeDetails"
       ></orderDetails>
+
+      <!-- 评论输入框 -->
+      <div class="commentEdit" v-if="isShowCommentBox">
+        <div class="edit">
+          <p>请对此次订餐打分</p>
+          <div class="editText">
+            <el-rate v-model="currentRateValue" show-text></el-rate>
+            <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="currentComment"></el-input>
+          </div>
+
+          <div class="operation">
+            <el-button type="danger" @click.stop="closeCommentBox">取消</el-button>
+            <el-button type="primary">评论</el-button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -74,13 +103,17 @@ import { mapMutations, mapGetters } from "vuex";
 import orderDetails from "../order/orderDetails";
 import { qiniuDomain } from "../../API/qiniuDomain";
 import { updateOrderState } from "../../API/getOrder";
-import { Dialog } from 'vant';
+import { Dialog } from "vant";
 
 export default {
   data() {
     return {
       orderDataItem: {}, //具体的店铺订单对象
-      isShowDetails: false //是否显示订单详情
+      isShowDetails: false, //是否显示订单详情
+      isShowCommentBox: false, //是否显示评论输入框
+      commentOrderItem: {}, //评论的订单对象
+      currentRateValue: 0,
+      currentComment: ""
     };
   },
   created() {
@@ -130,6 +163,10 @@ export default {
     ...mapMutations({
       set_currentOrderData: "set_currentOrderData"
     }),
+    //在数据库中更新订单的状态信息
+    async _updateOrderState(orderItem, state) {
+      await updateOrderState(orderItem, state);
+    },
     getPicUrl(pic_url) {
       return "http://" + qiniuDomain + "/" + pic_url;
     },
@@ -187,9 +224,16 @@ export default {
         })
         .catch(() => {});
     },
-    //在数据库中更新订单的状态信息
-    async _updateOrderState(orderItem, state) {
-      await updateOrderState(orderItem, state);
+    //打开评论输入框
+    openCommentBox(item) {
+      this.isShowCommentBox = true;
+      this.commentOrderItem = item;
+    },
+    //关闭评论输入框
+    closeCommentBox() {
+      this.isShowCommentBox = false;
+      this.currentRateValue = 0;
+      this.currentComment = "";
     }
   },
   computed: {
@@ -312,6 +356,61 @@ export default {
           .operation {
             text-align: right;
             padding-right: 2rem;
+          }
+        }
+      }
+    }
+
+    //评论输入框
+    .commentEdit {
+      position: fixed;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 999;
+      .edit {
+        width: 90%;
+        height: 60vh;
+        background-color: white;
+        margin: 0 auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-height: 80vh;
+        overflow: auto;
+        border-radius: 10px;
+        p {
+          line-height: 3;
+          font-size: 1.2rem;
+          text-align: center;
+          color: #909399;
+        }
+        .editText {
+          /deep/ .el-rate {
+            height: 5vh;
+            line-height: 5vh;
+            padding-left: 1rem;
+            /deep/ .el-rate__item {
+            }
+            /deep/ .el-rate__text {
+              vertical-align: text-bottom;
+            }
+          }
+          /deep/ .el-textarea {
+            textarea {
+              height: 25vh;
+              width: 90%;
+              margin: 0 auto;
+            }
+          }
+        }
+        .operation {
+          /deep/ .el-button {
+            display: block;
+            width: 90%;
+            margin: 1rem auto;
           }
         }
       }
