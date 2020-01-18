@@ -6,7 +6,7 @@
 
       <ul class="outerUl">
         <!-- <li class="header">我的订单</li> -->
-        <li v-for="(item,index) in orderData" :key="index" @click.self="openDetails(item)">
+        <li v-for="(item,index) in orderData" :key="index" @click="openDetails(item)">
           <div class="orderItem">
             <img :src="getPicUrl(item.shopInfo.pic_url)" alt />
             <div class="rightPart">
@@ -53,7 +53,7 @@
                 type="danger"
                 loading-text="申请取消中"
               />
-              <van-button type="info" size="small" v-if="item.state=='arrive'">已送达</van-button>
+              <van-button disabled type="info" size="small" v-if="item.state=='arrive'">已送达</van-button>
               <van-button type="info" size="small" @click.stop="goShop(item)">再叫一单</van-button>
             </div>
           </div>
@@ -74,6 +74,7 @@ import { mapMutations, mapGetters } from "vuex";
 import orderDetails from "../order/orderDetails";
 import { qiniuDomain } from "../../API/qiniuDomain";
 import { updateOrderState } from "../../API/getOrder";
+import { Dialog } from 'vant';
 
 export default {
   data() {
@@ -103,7 +104,7 @@ export default {
           this._updateOrderState(orderItem, "banCancel");
         }
 
-        //      
+        //
         if (
           new Date().getTime() - Date.parse(orderItem.buyTime) > 3600000 &&
           (orderItem.state == "waiting" ||
@@ -150,32 +151,41 @@ export default {
     },
     //申请取消订单
     askCancel(item) {
-      //首先判断是否超过 30分钟(时间戳 1秒 =8000 )，超过30分钟不可取消订单，并设为 已送达
-      if (item.state == "banCancel") {
-        Toast("订单超过10分钟，不可取消");
-      } else {
-        //判断未超时的状态
-        if (new Date().getTime() - Date.parse(item.buyTime) > 1800000) {
-          this._updateOrderState(item, "banCancel");
-          Toast("订单超过10分钟，不可取消");
-        } else {
-          console.log(
-            item.orderID,
-            "：申请取消订单，在vuex,数据库中更新其数据为askCancel"
-          );
+      Dialog.confirm({
+        title: "提示",
+        message: "是否申请取消该订单?"
+      })
+        .then(() => {
+          //首先判断是否超过 30分钟(时间戳 1秒 =8000 )，超过30分钟不可取消订单，并设为 已送达
+          if (item.state == "banCancel") {
+            Toast("订单超过10分钟，不可取消");
+          } else {
+            //判断未超时的状态
+            if (new Date().getTime() - Date.parse(item.buyTime) > 1800000) {
+              this._updateOrderState(item, "banCancel");
+              Toast("订单超过10分钟，不可取消");
+            } else {
+              console.log(
+                item.orderID,
+                "：申请取消订单，在vuex,数据库中更新其数据为askCancel"
+              );
 
-          //在vuex中更新订单信息
-          this.currentOrderData.forEach(orderItem => {
-            if (orderItem.orderID == item.orderID) {
-              orderItem.state = "askCancel";
+              //在vuex中更新订单信息
+              this.currentOrderData.forEach(orderItem => {
+                if (orderItem.orderID == item.orderID) {
+                  orderItem.state = "askCancel";
+                }
+              });
+              this.set_currentOrderData(this.currentOrderData);
+
+              //数据库中更新
+              this._updateOrderState(item, "askCancel");
+
+              Toast("已申请取消该订单");
             }
-          });
-          this.set_currentOrderData(this.currentOrderData);
-
-          //数据库中更新
-          this._updateOrderState(item, "askCancel");
-        }
-      }
+          }
+        })
+        .catch(() => {});
     },
     //在数据库中更新订单的状态信息
     async _updateOrderState(orderItem, state) {

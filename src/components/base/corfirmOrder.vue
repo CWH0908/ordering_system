@@ -79,7 +79,7 @@ import { updateOrder } from "../../API/checkUser";
 import { Toast } from "vant";
 import { qiniuDomain } from "../../API/qiniuDomain"; //七牛云外链
 import { saveOrder } from "../../API/getOrder";
-import { addShopSaleTimes } from "../../API/addShopSaleTimes"; //给店铺增加销售量
+import { updateShopSaleTimes } from "../../API/updateShopSaleTimes"; //给店铺增加销售量
 
 export default {
   created() {
@@ -166,7 +166,7 @@ export default {
 
               //给当前店铺的销量 +1
               this.shopInfo.saleTimes += 1;
-              addShopSaleTimes(this.shopID, this.shopInfo);
+              updateShopSaleTimes(this.shopID, this.shopInfo);
 
               //存储好订单后清空此店铺购物车
               shopItem.shopCar = [];

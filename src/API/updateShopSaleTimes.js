@@ -1,8 +1,8 @@
 import axios from "axios"
 
 //用户登录
-export function addShopSaleTimes(shopID, shopInfo) {
-  return axios.post("http://localhost:8081/addShopSaleTimes", {
+export function updateShopSaleTimes(shopID, shopInfo) {
+  return axios.post("http://localhost:8081/updateShopSaleTimes", {
     params: {
       shopID,
       shopInfo
