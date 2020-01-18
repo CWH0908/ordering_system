@@ -13,12 +13,23 @@ export function getOrder(account) {
 
 //保存订单信息到数据库
 export function saveOrder(orderData) {
-    return axios.post("http://localhost:8081/saveOrder", {
-      params: {
-        orderData
-      }
-    }).then(res => {
-      return Promise.resolve(res.data);
-    });
-  }
+  return axios.post("http://localhost:8081/saveOrder", {
+    params: {
+      orderData
+    }
+  }).then(res => {
+    return Promise.resolve(res.data);
+  });
+}
 
+//更新订单状态信息到数据库
+export function updateOrderState(orderItem, state) {
+  return axios.post("http://localhost:8081/updateOrderState", {
+    params: {
+      orderItem,
+      state
+    }
+  }).then(res => {
+    return Promise.resolve(res.data);
+  });
+}

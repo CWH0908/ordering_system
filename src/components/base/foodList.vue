@@ -153,11 +153,13 @@ export default {
     this.shopID = this.$route.params.id; //从路由参数中获取当前店铺ID，然后使用此ID请求该店铺下的菜品信息
     this._getFoodList();
     this._getShoplist();
-    setInterval(() => {
-      let time = new Date();
-      this.currentTime =
-        this.addZero(time.getHours()) + ":" + this.addZero(time.getMinutes());
-    }, 1000);
+    if (!this.isClose) {
+      setInterval(() => {
+        let time = new Date();
+        this.currentTime =
+          this.addZero(time.getHours()) + ":" + this.addZero(time.getMinutes());
+      }, 1000);
+    }
     this.connectWebScket(); //创建webSocket连接
   },
   destroyed() {
@@ -337,7 +339,7 @@ export default {
       return time < 10 ? "0" + time : time;
     },
 
-    //创建webSocket连接用于接收商家最新的信息*******************************8
+    //创建webSocket连接用于接收商家最新的信息*******************************
     //连接到webSocket
     connectWebScket() {
       this.initWebSocket();

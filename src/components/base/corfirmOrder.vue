@@ -79,6 +79,7 @@ import { updateOrder } from "../../API/checkUser";
 import { Toast } from "vant";
 import { qiniuDomain } from "../../API/qiniuDomain"; //七牛云外链
 import { saveOrder } from "../../API/getOrder";
+import { addShopSaleTimes } from "../../API/addShopSaleTimes"; //给店铺增加销售量
 
 export default {
   created() {
@@ -152,14 +153,20 @@ export default {
               newObj.addressData = this.sendAddress;
               newObj.payType = this.payRadio;
               newObj.buyTime = this.getCurrentTime();
+              newObj.state = "waiting"; //订单状态为等待中
+              newObj.orderID = this.shopID + "_" + new Date().getTime(); //订单ID
               // this.currentUser.orderData.push(newObj);
               //在vuex中更新订单信息
               // this.set_currentUser(this.currentUser);
               this.currentOrderData.push(newObj);
               this.set_currentOrderData(this.currentOrderData);
 
-              //在数据库更新数据
+              //在数据库更新订单数据
               saveOrder(newObj);
+
+              //给当前店铺的销量 +1
+              this.shopInfo.saleTimes += 1;
+              addShopSaleTimes(this.shopID, this.shopInfo);
 
               //存储好订单后清空此店铺购物车
               shopItem.shopCar = [];
