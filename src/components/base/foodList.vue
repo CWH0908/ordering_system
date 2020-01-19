@@ -138,7 +138,7 @@
             <div>
               <span>评分：</span>
               <div class="rate">
-                <el-rate v-model="item.rateValue" readonly></el-rate>
+                <el-rate v-model="item.rateValue" disabled></el-rate>
               </div>
             </div>
             <div class="commentPart">

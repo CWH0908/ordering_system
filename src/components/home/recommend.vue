@@ -100,7 +100,7 @@ export default {
           }
         }
       }
-      //评价排序
+      //销量排序
       else if (sortType == "sales") {
         var pivot = arr.splice(pivotIndex, 1)[0].saleTimes; //取出基准数，并去除，splice返回值为数组。
         for (var i = 0; i < arr.length; i++) {

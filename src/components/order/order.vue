@@ -125,7 +125,8 @@ import orderDetails from "../order/orderDetails";
 import { qiniuDomain } from "../../API/qiniuDomain";
 import { updateOrderState, updateOrderComment } from "../../API/getOrder";
 import { Dialog } from "vant";
-import {getAllShopOrder} from "../../API/getOrder"
+import { getAllShopOrder } from "../../API/getOrder";
+import { updateShopRateValue } from "../../API/getHomeRecommend";
 
 export default {
   data() {
@@ -195,6 +196,11 @@ export default {
     //在数据库中更新订单评论信息
     async _updateOrderComment(orderItem, rateValue, comment) {
       await updateOrderComment(orderItem, rateValue, comment);
+    },
+    //请求所有店铺的订单
+    async _getAllShopOrder() {
+      let temp = await getAllShopOrder();
+      this.set_allShopOrderData(temp);
     },
     getPicUrl(pic_url) {
       return "http://" + qiniuDomain + "/" + pic_url;
@@ -282,7 +288,7 @@ export default {
           //在vuex中更新该订单
           this.set_currentOrderData(this.currentOrderData);
 
-          //数据库中更新
+          //数据库中更新评论
           this._updateOrderComment(
             this.commentOrderItem,
             this.currentRateValue,
@@ -291,6 +297,8 @@ export default {
 
           //重新请求店铺所有订单，以获取最新的评分
           this._getAllShopOrder();
+
+          //重新设置该店铺的评分
 
           Toast("评论成功");
           this.isShowCommentBox = false;
@@ -308,14 +316,45 @@ export default {
     closeLookComment() {
       this.isShowLookComment = false;
     },
-    //请求所有店铺的订单
-    async _getAllShopOrder() {
-      let temp = await getAllShopOrder();
-      this.set_allShopOrderData(temp);
+    //计算得出店铺的评分
+    getShopRateValue(shopID) {
+      let newArr = [];
+      let rateValueSum = 0;
+      let currentShopID = shopID; //拿到当前的店铺ID
+      let currentShopOrderData = []; //当前店铺订单数组
+      //根据店铺ID，查找属于该店铺的订单
+      this.allShopOrderData.forEach(orderItem => {
+        if (orderItem.shopID == shopID) {
+          currentShopOrderData.push(orderItem);
+        }
+      });
+
+      if (
+        currentShopOrderData.length == 0 ||
+        currentShopOrderData == undefined
+      ) {
+        updateShopRateValue(shopID, 0);
+      } else {
+        //根据订单，计算出评分
+        currentShopOrderData.forEach(orderItem => {
+          if (
+            orderItem.state == "arrive" &&
+            orderItem.rateValue != 0 &&
+            orderItem.comment != ""
+          ) {
+            rateValueSum += orderItem.rateValue;
+            newArr.push(orderItem);
+          }
+        });
+        let temp = (rateValueSum / newArr.length).toFixed(1);
+
+        //重新设置此店铺的信息，即更新rateValue评论的分数
+        updateShopRateValue(shopID, Number(temp));
+      }
     }
   },
   computed: {
-    ...mapGetters(["currentUser", "currentOrderData"]),
+    ...mapGetters(["currentUser", "currentOrderData", "allShopOrderData"]),
     // orderData() {
     //   return this.currentUser.orderData;
     // }
