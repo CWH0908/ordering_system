@@ -56,13 +56,15 @@
               <van-button
                 type="primary"
                 size="small"
-                v-if="item.state=='arrive'&&item.comment==''"
+                v-if="item.state=='arrive'&&(item.comment==''||item.rateValue==0)"
                 @click.stop="openCommentBox(item)"
               >评论</van-button>
               <van-button
                 type="primary"
+                style="opacity:0.5;"
                 size="small"
-                v-if="item.comment!=''&&item.comment!=undefined"
+                v-if="item.rateValue>0&&item.comment!=''&&item.comment!=undefined"
+                @click.stop="openLookComment(item)"
               >已评论</van-button>
               <van-button disabled type="info" size="small" v-if="item.state=='arrive'">已送达</van-button>
               <van-button type="info" size="small" @click.stop="goShop(item)">再叫一单</van-button>
@@ -84,12 +86,31 @@
           <p>请对此次订餐打分</p>
           <div class="editText">
             <el-rate v-model="currentRateValue" show-text></el-rate>
-            <el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="currentComment"></el-input>
+            <el-input
+              type="textarea"
+              :rows="2"
+              placeholder="请输入内容"
+              v-model="currentComment"
+              clearable
+            ></el-input>
           </div>
 
           <div class="operation">
             <el-button type="danger" @click.stop="closeCommentBox">取消</el-button>
-            <el-button type="primary">评论</el-button>
+            <el-button type="primary" @click.stop="commentOrder">评论</el-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 评论回显框 -->
+      <div class="commentEdit" v-if="isShowLookComment">
+        <div class="look">
+          <div class="lookText">
+            <el-rate v-model="lookOrderItem.rateValue" show-text disabled></el-rate>
+            <el-input type="textarea" :rows="2" v-model="lookOrderItem.comment" disabled></el-input>
+          </div>
+          <div class="operation">
+            <el-button type="danger" @click.stop="closeLookComment">关闭</el-button>
           </div>
         </div>
       </div>
@@ -102,8 +123,9 @@ import { Toast } from "vant";
 import { mapMutations, mapGetters } from "vuex";
 import orderDetails from "../order/orderDetails";
 import { qiniuDomain } from "../../API/qiniuDomain";
-import { updateOrderState } from "../../API/getOrder";
+import { updateOrderState, updateOrderComment } from "../../API/getOrder";
 import { Dialog } from "vant";
+import {getAllShopOrder} from "../../API/getOrder"
 
 export default {
   data() {
@@ -113,7 +135,9 @@ export default {
       isShowCommentBox: false, //是否显示评论输入框
       commentOrderItem: {}, //评论的订单对象
       currentRateValue: 0,
-      currentComment: ""
+      currentComment: "",
+      isShowLookComment: false, //是否显示评论回显框
+      lookOrderItem: {} //正在查看评论的订单
     };
   },
   created() {
@@ -161,11 +185,16 @@ export default {
   },
   methods: {
     ...mapMutations({
-      set_currentOrderData: "set_currentOrderData"
+      set_currentOrderData: "set_currentOrderData",
+      set_allShopOrderData: "set_allShopOrderData"
     }),
     //在数据库中更新订单的状态信息
     async _updateOrderState(orderItem, state) {
       await updateOrderState(orderItem, state);
+    },
+    //在数据库中更新订单评论信息
+    async _updateOrderComment(orderItem, rateValue, comment) {
+      await updateOrderComment(orderItem, rateValue, comment);
     },
     getPicUrl(pic_url) {
       return "http://" + qiniuDomain + "/" + pic_url;
@@ -234,6 +263,55 @@ export default {
       this.isShowCommentBox = false;
       this.currentRateValue = 0;
       this.currentComment = "";
+    },
+    //发表评论
+    commentOrder() {
+      if (this.currentRateValue == 0 || this.currentComment.trim() == "") {
+        Toast("请完善评论信息");
+      } else {
+        if (this.currentComment.length > 140) {
+          Toast("评论长度限制在140个字哦");
+        } else {
+          this.currentOrderData.forEach(orderItem => {
+            if (orderItem.orderID == this.commentOrderItem.orderID) {
+              orderItem.rateValue = this.currentRateValue;
+              orderItem.comment = this.currentComment;
+            }
+          });
+
+          //在vuex中更新该订单
+          this.set_currentOrderData(this.currentOrderData);
+
+          //数据库中更新
+          this._updateOrderComment(
+            this.commentOrderItem,
+            this.currentRateValue,
+            this.currentComment
+          );
+
+          //重新请求店铺所有订单，以获取最新的评分
+          this._getAllShopOrder();
+
+          Toast("评论成功");
+          this.isShowCommentBox = false;
+          this.currentRateValue = 0;
+          this.currentComment = "";
+        }
+      }
+    },
+    //打开评论回显框
+    openLookComment(item) {
+      this.isShowLookComment = true;
+      this.lookOrderItem = item;
+    },
+    //关闭评论回显框
+    closeLookComment() {
+      this.isShowLookComment = false;
+    },
+    //请求所有店铺的订单
+    async _getAllShopOrder() {
+      let temp = await getAllShopOrder();
+      this.set_allShopOrderData(temp);
     }
   },
   computed: {
@@ -361,7 +439,7 @@ export default {
       }
     }
 
-    //评论输入框
+    //评论输入、查看框
     .commentEdit {
       position: fixed;
       top: 0;
@@ -388,6 +466,45 @@ export default {
           color: #909399;
         }
         .editText {
+          /deep/ .el-rate {
+            height: 5vh;
+            line-height: 5vh;
+            padding-left: 1rem;
+            /deep/ .el-rate__item {
+            }
+            /deep/ .el-rate__text {
+              vertical-align: text-bottom;
+            }
+          }
+          /deep/ .el-textarea {
+            textarea {
+              height: 25vh;
+              width: 90%;
+              margin: 0 auto;
+            }
+          }
+        }
+        .operation {
+          /deep/ .el-button {
+            display: block;
+            width: 90%;
+            margin: 1rem auto;
+          }
+        }
+      }
+      .look {
+        width: 90%;
+        height: 40vh;
+        background-color: white;
+        margin: 0 auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-height: 80vh;
+        overflow: auto;
+        border-radius: 10px;
+        .lookText {
           /deep/ .el-rate {
             height: 5vh;
             line-height: 5vh;

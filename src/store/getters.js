@@ -22,3 +22,7 @@ export const currentUser = (state) => {
 export const currentOrderData = (state) => {
   return state.currentOrderData
 }
+
+export const allShopOrderData = (state) => {
+  return state.allShopOrderData
+}

@@ -13,7 +13,7 @@
             <!-- 店铺销量信息 -->
             <div class="selfInfo">
               <el-rate
-                v-model="item.rateValue"
+                :value="getShopRateValue(item)"
                 disabled
                 show-score
                 text-color="#ff9900"
@@ -39,6 +39,9 @@
 
 <script>
 import { qiniuDomain } from "../../API/qiniuDomain";
+import { getAllShopOrder } from "../../API/getOrder";
+import { mapMutations, mapGetters } from "vuex";
+
 export default {
   props: {
     shopList: {
@@ -46,7 +49,13 @@ export default {
       default: () => []
     }
   },
+  beforeCreate() {
+    // this._getAllShopOrder();
+  },
   methods: {
+    ...mapMutations({
+      set_allShopOrderData: "set_allShopOrderData"
+    }),
     getPicUrl(pic_url) {
       return "http://" + qiniuDomain + "/" + pic_url;
     },
@@ -58,7 +67,45 @@ export default {
           id: item.shopID
         }
       });
+    },
+
+    //计算得出店铺的评分
+    getShopRateValue(shopItem) {
+      let newArr = [];
+      let rateValueSum = 0;
+      let currentShopID = shopItem.shopID; //拿到当前的店铺ID
+      let currentShopOrderData = []; //当前店铺订单数组
+      //根据店铺ID，查找属于该店铺的订单
+      this.allShopOrderData.forEach(orderItem => {
+        if (orderItem.shopID == shopItem.shopID) {
+          currentShopOrderData.push(orderItem);
+        }
+      });
+
+      if (
+        currentShopOrderData.length == 0 ||
+        currentShopOrderData == undefined
+      ) {
+        return 0;
+      } else {
+        //根据订单，计算出评分
+        currentShopOrderData.forEach(orderItem => {
+          if (
+            orderItem.state == "arrive" &&
+            orderItem.rateValue != 0 &&
+            orderItem.comment != ""
+          ) {
+            rateValueSum += orderItem.rateValue;
+            newArr.push(orderItem);
+          }
+        });
+        let temp = (rateValueSum / newArr.length).toFixed(1);
+        return Number(temp);
+      }
     }
+  },
+  computed: {
+    ...mapGetters(["allShopOrderData"])
   }
 };
 </script>

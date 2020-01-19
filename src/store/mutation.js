@@ -31,6 +31,11 @@ const mutations = {
   // }
   set_currentOrderData(state, newOrderArr) {
     state.currentOrderData = newOrderArr
+  },
+
+  //设置店铺所有的订单
+  set_allShopOrderData(state, allShopOrderData) {
+    state.allShopOrderData = allShopOrderData;
   }
 }
 

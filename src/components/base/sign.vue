@@ -45,6 +45,8 @@ import { login, register, inputRegister } from "../../API/checkUser";
 import { getOrder } from "../../API/getOrder";
 import { Toast } from "vant";
 import { mapMutations } from "vuex";
+import { getAllShopOrder } from "../../API/getOrder";
+
 export default {
   data() {
     return {
@@ -53,7 +55,16 @@ export default {
       userData: {} //用于存储从数据库查询回来的用户信息(包括账号、密码、地址信息数组、订单信息数组)
     };
   },
+  created() {
+    this._getAllShopOrder();
+  },
   methods: {
+    //将用户信息保存在vuex中，实现用户信息中的购物车数据实时更新
+    ...mapMutations({
+      set_currentUser: "set_currentUser",
+      set_currentOrderData: "set_currentOrderData",
+      set_allShopOrderData: "set_allShopOrderData"
+    }),
     //用户登录
     userLogin() {
       this._userLogin();
@@ -121,11 +132,11 @@ export default {
       }
     },
 
-    //将用户信息保存在vuex中，实现用户信息中的购物车数据实时更新
-    ...mapMutations({
-      set_currentUser: "set_currentUser",
-      set_currentOrderData: "set_currentOrderData"
-    })
+    //请求所有店铺的订单
+    async _getAllShopOrder() {
+      let temp = await getAllShopOrder();
+      this.set_allShopOrderData(temp);
+    }
   }
 };
 </script>

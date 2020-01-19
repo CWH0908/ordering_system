@@ -15,20 +15,28 @@
         </div>
         <h1 class="shopName">{{shopInfo.shopName}}</h1>
         <div class="shopInfo">
-          <span>评价：{{shopInfo.rateValue}} 分</span>
+          <span>评价：{{currentShopRateValue}} 分</span>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <span>已售：{{shopInfo.saleTimes}} 份</span>
+          <el-button
+            @click="toggleShopComment"
+            class="shopCommentButton"
+            type="success"
+            size="mini"
+            plain
+          >评论</el-button>
           <el-button
             @click="toggleShopDetail"
             class="shopDetailButton"
             type="primary"
             size="mini"
+            plain
           >详情</el-button>
         </div>
       </div>
 
       <!-- 主体部分 -->
-      <div class="main">
+      <div class="mainList">
         <div class="shopRecommendPart" v-if="recommendFoodList.length>0">
           <h3>商家推荐</h3>
           <!-- 推荐列表长度小于3，使用普通div居中 -->
@@ -116,6 +124,32 @@
       </div>
     </div>
 
+    <!-- 店铺评论板块 -->
+    <div class="shopComment" v-show="isShowShopComment" @click.self="toggleShopComment">
+      <div class="info">
+        <div class="title">店铺评论:{{shopComment.length}}</div>
+        <ul>
+          <li v-for="(item ,index) in shopComment" :key="index">
+            <p>用户：{{item.userAccount}}</p>
+            <p>
+              时间：
+              <span class="time">{{item.buyTime}}</span>
+            </p>
+            <div>
+              <span>评分：</span>
+              <div class="rate">
+                <el-rate v-model="item.rateValue" readonly></el-rate>
+              </div>
+            </div>
+            <div class="commentPart">
+              <span class="commentTitle">评论：</span>
+              <div class="commentInfo">{{item.comment}}</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <div class="fullDiv" v-if="isClose">
       <!-- 打烊时候使用的背景板 -->
     </div>
@@ -142,6 +176,7 @@ import corfirmOrder from "../base/corfirmOrder";
 import { qiniuDomain } from "../../API/qiniuDomain";
 import { Toast } from "vant";
 import { webSocketUrl } from "../../API/webSocketUrl";
+import { getShopOrder } from "../../API/getOrder";
 
 let that; //全局this对象
 export default {
@@ -161,6 +196,7 @@ export default {
       }, 1000);
     }
     this.connectWebScket(); //创建webSocket连接
+    this._getShopOrder();
   },
   destroyed() {
     this.closeConnect(); //关闭webSocket连接
@@ -181,34 +217,11 @@ export default {
       isClose: false, //当前是否关门
       clickSure: false, //倒计时结束
       websock: null, //用于初始化为一个webSocket实例
-      requireData: "接收到服务端发送的数据:" //用于接收服务器返回的数据
+      requireData: "接收到服务端发送的数据:", //用于接收服务器返回的数据
+      isShowShopComment: false, //是否显示店铺评论
+      currentShopOrder: [] //当前店铺的订单
     };
   },
-  //此filters方式已废弃
-  //   filters: {
-  //     //对传入的foodItem，返回其在购物车内的数量
-  //     findFoodBuyNums(foodItem) {
-  //       that.$nextTick(function() {
-  //         for (let i in that.all_shop_car) {
-  //           //首先找到店铺
-  //           if (that.all_shop_car[i].shopID == that.shopID) {
-  //             if (that.all_shop_car[i].shopCar.length == 0) {
-  //               return 0;
-  //             } else {
-  //               for (let j in that.all_shop_car[i].shopCar) {
-  //                 if (that.all_shop_car[i].shopCar[j].foodData.foodID == foodItem.foodID) {
-  //                   //返回在vuex中的购物车计数器的值
-  //                   //   debugger;
-  //                   console.log(that.all_shop_car[i].shopCar[j].foodCount);
-  //                   return that.all_shop_car[i].shopCar[j].foodCount;
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       });
-  //     }
-  //   },
   methods: {
     //修改购物车信息(当前店铺)
     ...mapMutations({
@@ -223,6 +236,10 @@ export default {
     //请求店铺信息
     async _getShoplist() {
       this.shopInfo = await getHomeShoplist(this.shopID);
+    },
+    //获取当前店铺订单
+    async _getShopOrder() {
+      this.currentShopOrder = await getShopOrder(this.shopID);
     },
     //请求该店铺的菜品信息
     async _getFoodList() {
@@ -334,6 +351,15 @@ export default {
           }); //passive 参数不能省略，用来兼容ios和android
       }
     },
+    //控制店铺评论显隐
+    toggleShopComment() {
+      this.isShowShopComment = !this.isShowShopComment;
+      if (this.isShowShopComment) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "auto";
+      }
+    },
     //补0函数
     addZero(time) {
       return time < 10 ? "0" + time : time;
@@ -388,7 +414,35 @@ export default {
   },
   computed: {
     //所有购物车信息，数组
-    ...mapGetters(["all_shop_car"])
+    ...mapGetters(["all_shop_car", "currentOrderData"]),
+    shopComment() {
+      let newArr = [];
+      this.currentOrderData.forEach(orderItem => {
+        if (
+          orderItem.state == "arrive" &&
+          orderItem.rateValue != 0 &&
+          orderItem.comment.trim() != ""
+        ) {
+          newArr.push(orderItem);
+        }
+      });
+      return newArr;
+    },
+    currentShopRateValue() {
+      let newArr = [];
+      let rateValueSum = 0;
+      this.currentShopOrder.forEach(orderItem => {
+        if (
+          orderItem.state == "arrive" &&
+          orderItem.rateValue != 0 &&
+          orderItem.comment.trim() != ""
+        ) {
+          rateValueSum += orderItem.rateValue;
+          newArr.push(orderItem);
+        }
+      });
+      return (rateValueSum / newArr.length).toFixed(1);
+    }
   },
   watch: {
     allFoodList(newVal) {
@@ -538,6 +592,31 @@ export default {
       }
     }
   },
+  //此filters方式已废弃
+  //   filters: {
+  //     //对传入的foodItem，返回其在购物车内的数量
+  //     findFoodBuyNums(foodItem) {
+  //       that.$nextTick(function() {
+  //         for (let i in that.all_shop_car) {
+  //           //首先找到店铺
+  //           if (that.all_shop_car[i].shopID == that.shopID) {
+  //             if (that.all_shop_car[i].shopCar.length == 0) {
+  //               return 0;
+  //             } else {
+  //               for (let j in that.all_shop_car[i].shopCar) {
+  //                 if (that.all_shop_car[i].shopCar[j].foodData.foodID == foodItem.foodID) {
+  //                   //返回在vuex中的购物车计数器的值
+  //                   //   debugger;
+  //                   console.log(that.all_shop_car[i].shopCar[j].foodCount);
+  //                   return that.all_shop_car[i].shopCar[j].foodCount;
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       });
+  //     }
+  //   },
   components: {
     foodItemRecommend,
     foodItem,
@@ -596,14 +675,19 @@ export default {
         font-size: 0.8rem;
         span {
         }
+        .shopCommentButton {
+          position: absolute;
+          right: 0.5rem;
+          bottom: 1.6rem;
+        }
         .shopDetailButton {
           position: absolute;
           right: 0.5rem;
-          bottom: -0.1rem;
+          bottom: -0.4rem;
         }
       }
     }
-    .main {
+    .mainList {
       .shopRecommendPart {
         margin: 0.5rem 0rem;
         border-top: 1px dotted gray;
@@ -698,6 +782,61 @@ export default {
           display: inline-block;
           padding-left: 1rem;
           width: 40%;
+        }
+      }
+    }
+  }
+  .shopComment {
+    z-index: 999;
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.8);
+    .info {
+      width: 90%;
+      height: 60vh;
+      overflow: scroll;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 0.5rem;
+      .title {
+        color: white;
+        padding-left: 0.5rem;
+      }
+      ul {
+        li {
+          border: 1px solid rgba(0, 0, 0, 0.2);
+          margin-bottom: 0.5rem;
+          background-color: white;
+          margin: 1rem 0;
+          padding: 1rem;
+          border-radius: 12px;
+          p {
+            line-height: 2;
+            .time {
+              color: rgba(0, 0, 0, 0.4);
+            }
+          }
+          .rate {
+            display: inline-block;
+            line-height: 2;
+            span {
+              vertical-align: middle;
+            }
+          }
+          .commentPart {
+            line-height: 2;
+            .commentTitle {
+              float: left;
+            }
+          }
         }
       }
     }
