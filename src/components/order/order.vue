@@ -127,6 +127,7 @@ import { updateOrderState, updateOrderComment } from "../../API/getOrder";
 import { Dialog } from "vant";
 import { getAllShopOrder } from "../../API/getOrder";
 import { updateShopRateValue } from "../../API/getHomeRecommend";
+import { updateFoodSaleTimes } from "../../API/getHomeFoodList";
 
 export default {
   data() {
@@ -164,7 +165,7 @@ export default {
 
         //
         if (
-          new Date().getTime() - Date.parse(orderItem.buyTime) > 3600000 &&
+          new Date().getTime() - Date.parse(orderItem.buyTime) > 10000 &&
           (orderItem.state == "waiting" ||
             orderItem.state == "cancelFail" ||
             orderItem.state == "banCancel")
@@ -178,8 +179,14 @@ export default {
           });
           this.set_currentOrderData(this.currentOrderData);
 
-          // 在数据库中更新
+          // 在数据库中更新订单状态
           this._updateOrderState(orderItem, "arrive");
+
+          //给购买的菜品的销量上升
+          console.log("到达订单里的菜品写入数据库", orderItem);
+          orderItem.foodList.forEach(foodItem => {
+            updateFoodSaleTimes(foodItem.foodData.foodID, foodItem.foodCount);
+          });
         }
       });
     }, 1000);
@@ -359,7 +366,7 @@ export default {
     //   return this.currentUser.orderData;
     // }
     orderData() {
-      return this.currentOrderData.reverse();
+      return this.currentOrderData;
     }
   },
   components: {

@@ -88,7 +88,6 @@ export default {
         currentShopOrderData == undefined
       ) {
         updateShopRateValue(shopItem.shopID, 0);
-
         return 0;
       } else {
         //根据订单，计算出评分
@@ -102,12 +101,17 @@ export default {
             newArr.push(orderItem);
           }
         });
-        let temp = (rateValueSum / newArr.length).toFixed(1);
 
-        //重新设置此店铺的信息，即更新rateValue评论的分数
-        updateShopRateValue(shopItem.shopID, Number(temp));
-
-        return Number(temp);
+        if (newArr.length == 0) {
+          //重新设置此店铺的信息，即更新rateValue评论的分数
+          updateShopRateValue(shopItem.shopID, 0);
+          return 0;
+        } else {
+          let temp = (rateValueSum / newArr.length).toFixed(1);
+          //重新设置此店铺的信息，即更新rateValue评论的分数
+          updateShopRateValue(shopItem.shopID, Number(temp));
+          return Number(temp);
+        }
       }
     }
   },

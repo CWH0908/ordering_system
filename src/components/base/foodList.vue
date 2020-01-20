@@ -441,6 +441,9 @@ export default {
           newArr.push(orderItem);
         }
       });
+      if (newArr.length == 0) {
+        return 0;
+      }
       return (rateValueSum / newArr.length).toFixed(1);
     }
   },

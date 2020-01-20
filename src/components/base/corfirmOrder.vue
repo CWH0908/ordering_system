@@ -160,7 +160,7 @@ export default {
               // this.currentUser.orderData.push(newObj);
               //在vuex中更新订单信息
               // this.set_currentUser(this.currentUser);
-              this.currentOrderData.push(newObj);
+              this.currentOrderData.unshift(newObj);
               this.set_currentOrderData(this.currentOrderData);
 
               //在数据库更新订单数据
