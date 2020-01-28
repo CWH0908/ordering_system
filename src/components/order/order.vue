@@ -165,7 +165,7 @@ export default {
 
         //
         if (
-          new Date().getTime() - Date.parse(orderItem.buyTime) > 10000 &&
+          new Date().getTime() - Date.parse(orderItem.buyTime) > 3600000 &&
           (orderItem.state == "waiting" ||
             orderItem.state == "cancelFail" ||
             orderItem.state == "banCancel")
@@ -366,7 +366,7 @@ export default {
     //   return this.currentUser.orderData;
     // }
     orderData() {
-      return this.currentOrderData;
+      return JSON.parse(JSON.stringify(this.currentOrderData));
     }
   },
   components: {

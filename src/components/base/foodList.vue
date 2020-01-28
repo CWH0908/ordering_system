@@ -11,7 +11,7 @@
       <!-- 头部栏 -->
       <div class="header">
         <div>
-          <img class="shopPic" :src="getPicUrl(shopInfo.pic_url)" />
+          <img class="shopPic" :src="'http://'+ qiniuDomain + '/' +shopInfo.pic_url" />
         </div>
         <h1 class="shopName">{{shopInfo.shopName}}</h1>
         <div class="shopInfo">
@@ -67,10 +67,10 @@
             :style="stickyHeight"
             :index-list="indexList"
             highlight-color="#6495ed"
-            :sticky="false"
+            :sticky="true"
           >
             <van-cell class="vantCell">
-              <div v-for="index0 in indexList" :key="index0">
+              <div v-for="(index0) in indexList" :key="index0">
                 <van-index-anchor :index="index0">{{index0}}</van-index-anchor>
                 <div v-for="(item,index1) in groupFoodList[index0]" :key="index1">
                   <foodItem :foodItem="item" @selectFoodItem="selectFoodItem"></foodItem>
@@ -213,13 +213,18 @@ export default {
       stickyHeight: "height:100vh", //粘性定位的元素高度，根据foodList数据动态获取
       isShowShopCarInfo: false, //是否显示购物车详情组件
       isShowShopDetails: false, //是否显示店铺详情
-      currentTime: "", //当前时间
+      // currentTime: "", //当前时间
+      currentTime:
+        this.addZero(new Date().getHours()) +
+        ":" +
+        this.addZero(new Date().getMinutes()),
       isClose: false, //当前是否关门
       clickSure: false, //倒计时结束
       websock: null, //用于初始化为一个webSocket实例
       requireData: "接收到服务端发送的数据:", //用于接收服务器返回的数据
       isShowShopComment: false, //是否显示店铺评论
-      currentShopOrder: [] //当前店铺的订单
+      currentShopOrder: [], //当前店铺的订单
+      qiniuDomain: qiniuDomain
     };
   },
   methods: {
@@ -228,6 +233,7 @@ export default {
       set_all_shop_car: "set_all_shop_car"
     }),
     getPicUrl(pic_url) {
+      console.log(pic_url);
       return "http://" + qiniuDomain + "/" + pic_url;
     },
     goBack() {
@@ -414,10 +420,16 @@ export default {
   },
   computed: {
     //所有购物车信息，数组
-    ...mapGetters(["all_shop_car", "currentOrderData"]),
+    ...mapGetters(["all_shop_car", "currentOrderData", "allShopOrderData"]),
     shopComment() {
       let newArr = [];
-      this.currentOrderData.forEach(orderItem => {
+      let currentShopOrderData = [];
+      this.allShopOrderData.forEach(item => {
+        if (item.shopID == this.shopID) {
+          currentShopOrderData.push(item);
+        }
+      });
+      currentShopOrderData.forEach(orderItem => {
         if (
           orderItem.state == "arrive" &&
           orderItem.rateValue != 0 &&
@@ -488,6 +500,7 @@ export default {
       for (let key in this.groupFoodList) {
         this.indexList.push(key);
       }
+      // this.indexList = ['A','B','C','D','E','F','G','H','I'];
 
       //得出粘性布局的高度,每个foodItem的高度设为17vh
       this.stickyHeight = "height:" + newVal.length * 17 + "vh";
@@ -722,37 +735,40 @@ export default {
         }
       }
       .allfoodList {
-        margin-top: 2rem;
+        // margin-top: 2rem;
 
         padding-bottom: 13rem;
         // vant索引栏
         .indexBar {
           height: 100vh;
           /deep/ .van-index-bar__index {
-            background-color: #e6e6fa;
           }
           /deep/ .van-index-bar__sidebar {
             position: sticky;
             top: 6vh;
             left: 0;
-            background-color: #6495ed;
             color: gray;
-            width: 24vw;
+            width: 20vw;
             height: 0;
             span {
-              padding: 0.5rem 0;
+              padding: 1rem 0;
               border: 1px solid gray;
             }
+          }
+          /deep/ .van-index-bar__index--active {
+            background-color: #6188fc !important;
+            color: yellow !important;
           }
         }
         .vantCell {
           float: right;
           width: 80vw;
           padding: 0 16px;
+          padding-bottom: 3rem;
           /deep/ .van-index-anchor {
             font-size: 1rem;
             font-weight: 900;
-            color: red;
+            color: #409EFF;
           }
         }
       }
@@ -781,6 +797,10 @@ export default {
         line-height: 2;
         font-size: 1.2rem;
         color: #606266;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
         span:nth-child(1) {
           display: inline-block;
           padding-left: 1rem;

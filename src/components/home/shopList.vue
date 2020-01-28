@@ -19,7 +19,7 @@
                 text-color="#ff9900"
                 score-template="{value}"
               ></el-rate>
-              <span>月售 {{item.saleTimes}} 单</span>
+              <span>已售 {{item.saleTimes}} 单</span>
             </div>
             <!-- 店铺基础费用，起送、配送费 -->
             <div class="baseFee">

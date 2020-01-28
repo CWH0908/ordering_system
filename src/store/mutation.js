@@ -29,6 +29,7 @@ const mutations = {
   //   tempDataArr.push(newOrderItem)
   //   state.currentOrderData = tempDataArr
   // }
+  //当前用户的所有订单
   set_currentOrderData(state, newOrderArr) {
     state.currentOrderData = newOrderArr
   },
