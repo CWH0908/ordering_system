@@ -4,7 +4,7 @@
     <div class="foodData">
       <h1>{{foodItem.foodName}}</h1>
       <div>
-        <span class="saleTimes">{{foodItem.foodInfo}}</span>
+        <span class="infoData">{{foodItem.foodInfo}}</span>
         <span class="saleTimes">月售：{{foodItem.saleTimes}}</span>
       </div>
     </div>
@@ -99,11 +99,21 @@ export default {
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .saleTimes {
+    .infoData {
       right: 0.6rem;
       font-size: 0.6rem;
       color: gray;
-      padding: 0.2rem 0;
+      // padding: 0.1rem 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .saleTimes {
+      display: block;
+      right: 0.6rem;
+      font-size: 0.6rem;
+      color: gray;
+      padding: 0.1rem 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

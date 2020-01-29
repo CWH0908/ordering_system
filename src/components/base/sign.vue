@@ -16,6 +16,7 @@
           clearable
         ></el-input>
         <el-input
+          show-password
           class="input"
           prefix-icon="el-icon-edit-outline"
           placeholder="请输入密码"
