@@ -12,7 +12,7 @@
     </div>
 
     <div v-else>
-      <div v-if="shopList.length==0">在地球上找不到该美食！</div>
+      <div style="color:gray;text-align:center;margin-top:2rem;" v-if="home_search_value.trim()!=''&&shopList.length==0">在地球上找不到该美食！</div>
       <shopList v-else :shopList="shopList"></shopList>
     </div>
   </div>

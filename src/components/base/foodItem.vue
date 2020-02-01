@@ -1,6 +1,6 @@
 <template>
   <div class="foodItem">
-    <img :src="getPicUrl(foodItem.pic_url)" />
+    <img v-lazy="getPicUrl(foodItem.pic_url)" />
     <div class="foodData">
       <h1>{{foodItem.foodName}}</h1>
       <div>
@@ -81,10 +81,10 @@ export default {
   position: relative;
   text-align: left;
   overflow: hidden;
-  height: 17vh;
+  height: 7rem;
   img {
-    width: 27vw;
-    height: 27vw;
+    width: 6rem;
+    height: 6rem;
     display: block;
     float: left;
   }
@@ -146,7 +146,7 @@ export default {
       line-height: 23px;
     }
     /deep/.el-input-number--mini {
-      width: 100px;
+      width: 5.4rem;
       line-height: 22px;
     }
   }

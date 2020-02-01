@@ -1,9 +1,11 @@
 //检查用户信息（登录）
 import axios from "axios"
+import {RemoteUrl} from "../API/RemoteServer"
 
 //用户登录
 export function login(account, psw) {
-  return axios.post("http://localhost:8081/login", {
+  // return axios.post("http://localhost:8081/login", {
+  return axios.post(RemoteUrl+"login", {
     params: {
       account,
       psw
@@ -15,7 +17,7 @@ export function login(account, psw) {
 
 //用户注册查询
 export function register(account) {
-  return axios.post("http://localhost:8081/register", {
+  return axios.post(RemoteUrl+"register", {
     params: {
       account
     }
@@ -26,7 +28,7 @@ export function register(account) {
 
 //写入用户注册数据
 export function inputRegister(account, psw) {
-  return axios.post("http://localhost:8081/inputRegister", {
+  return axios.post(RemoteUrl+"inputRegister", {
     params: {
       account,
       psw
@@ -38,7 +40,7 @@ export function inputRegister(account, psw) {
 
 //更新用户地址数据库
 export function updateAddress(account, addressData) {
-  return axios.post("http://localhost:8081/updateAddress", {
+  return axios.post(RemoteUrl+"updateAddress", {
     params: {
       account,
       addressData
@@ -50,7 +52,7 @@ export function updateAddress(account, addressData) {
 
 //更新用户订单数据库
 export function updateOrder(account, orderData) {
-  return axios.post("http://localhost:8081/updateOrder", {
+  return axios.post(RemoteUrl+"updateOrder", {
     params: {
       account,
       orderData

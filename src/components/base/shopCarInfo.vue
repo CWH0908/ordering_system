@@ -172,7 +172,7 @@ export default {
 }
 .shopCarInfo {
   position: fixed;
-  bottom: 7.5vh;
+  bottom: 3rem;
   width: 100%;
   min-height: 5rem;
   max-height: 60vh;
@@ -192,7 +192,7 @@ export default {
       padding: 0 1rem;
       height: 3rem;
       line-height: 3rem;
-      border-top: 1px solid gray;
+      // border-top: 1px solid gray;
       box-sizing: border-box;
     }
     .nothing {

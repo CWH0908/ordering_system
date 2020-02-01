@@ -8,8 +8,22 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 export default {
-  name: "App"
+  name: "App",
+  // 使用watch 监听$router的变化,
+  methods: {
+    ...mapMutations({
+      set_home_search_value: "set_home_search_value"
+    })
+  },
+  watch: {
+    $route: function(to, from) {
+      this.set_home_search_value("");
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
+    }
+  }
 };
 </script>
 

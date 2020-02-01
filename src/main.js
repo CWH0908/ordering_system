@@ -28,7 +28,9 @@ import {
   AddressEdit,
   Area,
   Popup,
-  Field
+  Field,
+  Lazyload,
+  TreeSelect
 } from 'vant';
 
 Vue.use(IndexBar).use(IndexAnchor);
@@ -43,6 +45,10 @@ Vue.use(Area)
 Vue.use(Button)
 Vue.use(Popup)
 Vue.use(Field)
+Vue.use(Lazyload, {
+  loading: require("./image/loading3.gif")
+})
+Vue.use(TreeSelect)
 Vue.use(Vant);
 
 //按需引入 echarts

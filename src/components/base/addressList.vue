@@ -9,9 +9,11 @@
       @edit="onEdit"
       @click-item="onClickItem"
     />
+    <!-- 新增地址 -->
     <div class="addressEdit" v-if="isShowInsertPart">
       <addressEdit @cancelEdit="cancelEdit" @savelEdit="savelEdit"></addressEdit>
     </div>
+    <!-- 修改地址 -->
     <div class="addressEdit" v-if="isShowModifyPart">
       <addressEdit
         @cancelEdit="cancelEdit"
@@ -31,17 +33,8 @@
 import { Toast } from "vant";
 import addressEdit from "../base/addressEdit";
 import { mapGetters } from "vuex";
+
 export default {
-  created() {
-    // this.addressList = JSON.parse(
-    //   localStorage.getItem("currentUser")
-    // ).addressData;
-  },
-  mounted() {
-    // document
-    //   .getElementsByClassName("van-radio__icon")[0]
-    //   .classList.add("van-radio__icon--checked");
-  },
   data() {
     return {
       chosenAddressId: "1", //选择的地址
@@ -66,8 +59,8 @@ export default {
   methods: {
     //选择地址
     onClickItem(item, index) {
-        // console.log(item,index);
-        this.$emit("onClickItem",item,index);
+      // console.log(item,index);
+      this.$emit("onClickItem", item, index);
     },
     //新增地址
     onAdd() {
@@ -116,6 +109,8 @@ export default {
     color: gray;
   }
   /deep/ .van-address-list {
+    overflow: scroll;
+    max-height: 17rem;
     padding-bottom: 10px;
     /deep/ .van-address-list__bottom {
       position: static;

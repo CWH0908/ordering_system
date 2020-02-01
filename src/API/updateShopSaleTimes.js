@@ -1,8 +1,9 @@
 import axios from "axios"
+import {RemoteUrl} from "../API/RemoteServer"
 
 //用户登录
 export function updateShopSaleTimes(shopID, shopInfo) {
-  return axios.post("http://localhost:8081/updateShopSaleTimes", {
+  return axios.post(RemoteUrl+"updateShopSaleTimes", {
     params: {
       shopID,
       shopInfo

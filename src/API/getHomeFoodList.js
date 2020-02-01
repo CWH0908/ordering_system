@@ -1,8 +1,8 @@
 import axios from "axios"
-
+import {RemoteUrl} from "../API/RemoteServer"
 
 export function getHomeShoplist(shopID) {
-  return axios.get("http://localhost:8081/home_shopList", {
+  return axios.get(RemoteUrl+"home_shopList", {
     params: shopID
   }).then(res => {
     return Promise.resolve(res.data[0]);
@@ -10,7 +10,7 @@ export function getHomeShoplist(shopID) {
 }
 
 export function getHomeFoodList(shopID) {
-  return axios.get("http://localhost:8081/home_foodList", {
+  return axios.get(RemoteUrl+"home_foodList", {
     params: shopID
   }).then(res => {
     return Promise.resolve(res.data);
@@ -19,7 +19,7 @@ export function getHomeFoodList(shopID) {
 
 
 export function updateFoodSaleTimes(foodID, foodCount) {
-  return axios.post("http://localhost:8081/updateFoodSaleTimes", {
+  return axios.post(RemoteUrl+"updateFoodSaleTimes", {
     params: {
       foodID,
       foodCount

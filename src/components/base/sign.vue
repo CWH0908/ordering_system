@@ -157,7 +157,7 @@ export default {
   .headImgDiv {
     position: absolute;
     left: 50%;
-    top: 25%;
+    top: 18%;
     transform: translate(-50%, -50%);
     .headImg {
       width: 30vw;
@@ -168,38 +168,45 @@ export default {
   //登录框
   .signBox {
     width: 90vw;
-    height: 33vh;
+    // height: 42vh;
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 20px;
-    .input {
+    /deep/ .input {
       width: 90%;
       display: block;
-      margin: 0 auto;
-      margin-top: 1.5rem;
-      margin-bottom: 1.5rem;
+      margin: 2vh auto;
+      input {
+        height: 2.5rem !important;
+      }
+      // margin-top: 1.5rem;
+      // margin-bottom: 1.5rem;
     }
     .sign-up-button {
       // width: 82vw;
-      height: 6.5vh;
-      display: inline-block;
+      height: 2.5rem;
+      line-height: 0;
+      display: block;
+      width: 90%;
+      margin: 1rem auto;
       text-align: center;
       border-radius: 20px;
-      margin-right: 6.8rem;
     }
     .sign-in-button {
-      // width: 82vw;
-      height: 6.5vh;
-      display: inline-block;
+      height: 2.5rem;
+      line-height: 0;
+      display: block;
+      width: 90%;
+      margin: 1rem auto;
       text-align: center;
       border-radius: 20px;
     }
     .opration {
       display: block;
-      margin: 0 1rem;
+      // margin: 0 1rem;
       .forgetButon {
         padding-left: 1rem;
         padding-right: 1.5rem;

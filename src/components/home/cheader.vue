@@ -15,16 +15,23 @@
 </template>
 
 <script>
-import {mapMutations} from 'vuex';
+import { mapMutations, mapGetters } from "vuex";
 export default {
   data() {
     return {
       searchValue: "",
       restaurants: [],
-      lastTime:0,//用于节流函数计时器
+      lastTime: 0 //用于节流函数计时器
     };
   },
+  computed: {
+    ...mapGetters(["home_search_value"])
+  },
   methods: {
+    ...mapMutations({
+      set_home_search_value: "set_home_search_value",
+      set_home_nav_currentIndex: "set_home_nav_currentIndex"
+    }),
     querySearch(queryString, cb) {
       var restaurants = this.restaurants;
       var results = queryString
@@ -43,7 +50,7 @@ export default {
     },
     loadAll() {
       return [
-        { value: "北方面点", address: "长宁区新渔路144号" },
+        { value: "广府美食", address: "长宁区新渔路144号" },
         {
           value: "华莱士",
           address: "上海市长宁区淞虹路661号"
@@ -89,21 +96,21 @@ export default {
       return func;
     },
     //搜索店铺信息
-    SearchShopInfo(newVal){
+    SearchShopInfo(newVal) {
       //存入vuex中
       this.set_home_search_value(newVal);
-    },
-    ...mapMutations({
-      set_home_search_value:"set_home_search_value",
-      set_home_nav_currentIndex:"set_home_nav_currentIndex"
-    })
+    }
   },
   mounted() {
     this.restaurants = this.loadAll();
+    this.searchValue = this.home_search_value;
   },
   watch: {
     searchValue(newVal) {
-      this.throttle(newVal,500)()
+      this.throttle(newVal, 500)();
+    },
+    home_search_value(newVal) {
+      this.searchValue = newVal;
     }
   }
 };
@@ -113,12 +120,13 @@ export default {
 .cheader {
   position: sticky;
   top: 0;
+  height: 15vh;
   z-index: 999;
 
   .container {
     // height: 10vh;
     padding: 1rem 0;
-    background-color: rgba(81, 81, 245, 1);
+    background-color: #0096fb;
     text-align: center;
     .welcome {
       font-size: 1.5rem;
@@ -127,6 +135,62 @@ export default {
     }
     /deep/ .inline-input {
       width: 90%;
+    }
+  }
+
+  @media screen and (min-height: 850px) {
+    .container {
+      padding: 4vh 0;
+    }
+  }
+
+    @media screen and (min-height: 1150px) {
+    .container {
+      padding: 4.5vh 0;
+    }
+  }
+
+  @media screen and (max-height: 850px) {
+    .container {
+      padding: 1.6rem 0;
+    }
+  }
+
+  @media screen and (max-height: 800px) {
+    .container {
+      padding: 1.2rem 0;
+    }
+  }
+
+  @media screen and (max-height: 640px) {
+    .container {
+      padding: 0.6rem 0;
+    }
+  }
+
+  @media screen and (max-height: 600px) {
+    .container {
+      padding: 0.3rem 0;
+    }
+  }
+
+  /*iphoneX*/
+  // @media screen and (min-height: 700px) {
+  //   .container {
+  //     padding: 1.4rem 0;
+  //   }
+  // }
+
+  // @media screen and (min-height: 800px) {
+  //   .container {
+  //     padding: 2rem 0;
+  //   }
+  // }
+
+  /*大平板*/
+  @media screen and (min-width: 992px) {
+    .container {
+      padding: 4rem 0;
     }
   }
 }

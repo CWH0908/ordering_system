@@ -9,7 +9,7 @@
           :key="index"
           @click="selectItem(index)"
         >
-          <img :src="item.pic_url" />
+          <img v-lazy="item.pic_url" />
           <br />
           <span>{{item.item_type}}</span>
         </li>
@@ -68,7 +68,7 @@ export default {
 
 <style lang="less" scoped>
 .navPart {
-  background: -webkit-gradient(linear, 0 0, 0 100%, from(#4169e1), to(#b0c4de));
+  background: -webkit-gradient(linear, 0 0, 0 100%, from(#0096fb), to(#b0c4de));
   .navData {
     ul {
       display: flex;

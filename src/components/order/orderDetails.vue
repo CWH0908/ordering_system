@@ -6,7 +6,7 @@
           <li class="headerLi">{{orderDataItem.shopInfo.shopName}}</li>
           <li class="foodLi" v-for="(foodItem,index) in orderDataItem.foodList" :key="index">
             <div>
-              <img :src="getPicUrl(foodItem.foodData.pic_url)" alt />
+              <img v-lazy="getPicUrl(foodItem.foodData.pic_url)" alt />
               <p class="name">{{foodItem.foodData.foodName}}</p>
               <p class="count">
                 <span>x</span>

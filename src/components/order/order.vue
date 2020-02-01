@@ -2,13 +2,15 @@
   <div class="order">
     <div class="container">
       <div v-show="currentOrderData.length==0" class="noOrder">还没有订单呢，快去选购吧~</div>
-      <div class="header">我的订单</div>
+      <div class="headerPart">
+        <div class="header">我的订单</div>
+      </div>
 
       <ul class="outerUl">
         <!-- <li class="header">我的订单</li> -->
         <li v-for="(item,index) in orderData" :key="index" @click="openDetails(item)">
           <div class="orderItem">
-            <img :src="getPicUrl(item.shopInfo.pic_url)" alt />
+            <img v-lazy="getPicUrl(item.shopInfo.pic_url)" alt />
             <div class="rightPart">
               <div class="shopInfo">
                 <h3>{{item.shopInfo.shopName}}</h3>
@@ -33,6 +35,7 @@
               </div>
             </div>
             <div class="operation">
+              <van-button disabled type="info" size="small" v-if="item.state=='arrive'">已送达</van-button>
               <van-button
                 type="danger"
                 size="small"
@@ -66,7 +69,12 @@
                 v-if="item.rateValue>0&&item.comment!=''&&item.comment!=undefined"
                 @click.stop="openLookComment(item)"
               >已评论</van-button>
-              <van-button disabled type="info" size="small" v-if="item.state=='arrive'">已送达</van-button>
+              <van-button
+                type="primary"
+                size="small"
+                @click.stop="sureReceive(item)"
+                v-if="item.state!='arrive'&&item.state!='cancelSuccess'"
+              >确认送达</van-button>
               <van-button type="info" size="small" @click.stop="goShop(item)">再叫一单</van-button>
             </div>
           </div>
@@ -266,6 +274,33 @@ export default {
         })
         .catch(() => {});
     },
+    //手动提前确认收货
+    sureReceive(item) {
+      Dialog.confirm({
+        title: "提示",
+        message: "是否确认收货？"
+      })
+        .then(() => {
+          console.log(
+            item.orderID,
+            "：手动确认收货，在vuex,数据库中更新其数据为arrive"
+          );
+
+          //在vuex中更新订单信息
+          this.currentOrderData.forEach(orderItem => {
+            if (orderItem.orderID == item.orderID) {
+              orderItem.state = "arrive";
+            }
+          });
+          this.set_currentOrderData(this.currentOrderData);
+
+          //数据库中更新
+          this._updateOrderState(item, "arrive");
+
+          Toast("已确认收货");
+        })
+        .catch(() => {});
+    },
     //打开评论输入框
     openCommentBox(item) {
       this.isShowCommentBox = true;
@@ -366,7 +401,30 @@ export default {
     //   return this.currentUser.orderData;
     // }
     orderData() {
-      return JSON.parse(JSON.stringify(this.currentOrderData));
+      return JSON.parse(JSON.stringify(this.currentOrderData)).reverse();
+    }
+  },
+  watch: {
+    isShowCommentBox(newVal) {
+      if (newVal) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "auto";
+      }
+    },
+    isShowDetails(newVal) {
+      if (newVal) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "auto";
+      }
+    },
+    isShowLookComment(newVal) {
+      if (newVal) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "auto";
+      }
     }
   },
   components: {
@@ -378,14 +436,14 @@ export default {
 <style lang="less" scoped>
 .order {
   .container {
-    min-height: 100vh;
+    min-height: 80vh;
     padding-top: 4rem;
     padding-bottom: 10vh;
     background: -webkit-gradient(
       linear,
       0 0,
       0 100%,
-      from(#4169e1),
+      from(#0096fb),
       to(#b0c4de)
     );
     .noOrder {
@@ -398,20 +456,28 @@ export default {
       width: 100%;
       transform: translate(-50%, -50%);
     }
-    .header {
-      width: 90%;
-      margin: 0 auto;
+    .headerPart {
       position: fixed;
+      top: 0;
+      width: 100%;
+      height: 9vh;
+      background: #0096fb;
       z-index: 999;
-      top: 1rem;
-      left: 0;
-      right: 0;
-      background-color: white;
-      height: 6vh;
-      line-height: 6vh;
-      text-align: center;
-      font-size: 1.2rem;
-      border-radius: 24px;
+      .header {
+        width: 90%;
+        margin: 0 auto;
+        position: fixed;
+        z-index: 999;
+        top: 0.5rem;
+        left: 0;
+        right: 0;
+        background-color: white;
+        height: 6vh;
+        line-height: 6vh;
+        text-align: center;
+        font-size: 1.2rem;
+        border-radius: 24px;
+      }
     }
     .outerUl {
       // padding-top: 10rem;
@@ -423,7 +489,8 @@ export default {
         margin: 0 auto;
         margin-bottom: 1rem;
         .orderItem {
-          background-color: rgba(255, 255, 255, 0.4);
+          // background-color: rgba(255, 255, 255, 0.4);
+          background-color: white;
           padding: 1rem 0.5rem;
           border-radius: 10px;
           img {

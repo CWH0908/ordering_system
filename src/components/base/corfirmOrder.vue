@@ -34,7 +34,7 @@
           <ul>
             <li class="confirmOrderItem" v-for="(item,index) in currentShopCar" :key="index">
               <div>
-                <img :src="getPicUrl(item.foodData.pic_url)" alt />
+                <img v-lazy="getPicUrl(item.foodData.pic_url)" alt />
                 <span class="foodName">{{item.foodData.foodName}}</span>
                 <span class="foodCount">x {{item.foodCount}}</span>
                 <div class="newMoney">
@@ -160,7 +160,7 @@ export default {
               // this.currentUser.orderData.push(newObj);
               //在vuex中更新订单信息
               // this.set_currentUser(this.currentUser);
-              this.currentOrderData.unshift(newObj);
+              this.currentOrderData.push(newObj);
               this.set_currentOrderData(this.currentOrderData);
 
               //在数据库更新订单数据
@@ -267,7 +267,7 @@ export default {
       linear,
       0 0,
       0 100%,
-      from(#4169e1),
+      from(#0091fc),
       to(#b0c4de)
     );
     header {
@@ -299,6 +299,10 @@ export default {
         margin-bottom: 1rem;
       }
       .addressListPart {
+        /deep/ .van-address-list {
+          overflow: scroll;
+          height: 20rem;
+        }
       }
     }
     .orderInfo {
@@ -319,46 +323,49 @@ export default {
           padding: 0 1rem;
           margin-bottom: 1rem;
           img {
-            width: 10vw;
-            height: 10vw;
+            width: 4rem;
+            height: 4rem;
             vertical-align: middle;
           }
           .foodName {
             display: inline-block;
-            width: 40%;
+            width: 7rem;
+            text-indent: 5px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
           }
           .foodCount {
             display: inline-block;
-            width: 23%;
+            width: 2rem;
           }
           .newMoney {
             display: inline-block;
-            width: 20%;
+            width: 4rem;
           }
         }
         .sendPart {
           padding: 0 1rem;
           margin-bottom: 1rem;
+          color: gray;
+
           .sendInfo {
             display: inline-block;
-            width: 78%;
+            width: 13.7rem;
           }
           .sendFee {
             span {
               font-size: 0.8rem;
             }
             display: inline-block;
-            width: 20%;
+            width: 22%;
           }
         }
         .sumPricePart {
           margin-top: 2rem;
           .emptySpan {
             display: inline-block;
-            width: 58%;
+            width: 12.3rem;
           }
           .text {
             display: inline-block;

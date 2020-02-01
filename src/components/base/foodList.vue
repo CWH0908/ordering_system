@@ -11,7 +11,7 @@
       <!-- 头部栏 -->
       <div class="header">
         <div>
-          <img class="shopPic" :src="'http://'+ qiniuDomain + '/' +shopInfo.pic_url" />
+          <img class="shopPic" v-lazy="'http://'+ qiniuDomain + '/' +shopInfo.pic_url" />
         </div>
         <h1 class="shopName">{{shopInfo.shopName}}</h1>
         <div class="shopInfo">
@@ -438,7 +438,7 @@ export default {
           newArr.push(orderItem);
         }
       });
-      return newArr;
+      return newArr.reverse();
     },
     currentShopRateValue() {
       let newArr = [];
@@ -704,16 +704,19 @@ export default {
       }
     }
     .mainList {
+      margin-top: 1rem;
+      padding-top: 0.5rem;
+      border-top: 1px dotted gray;
       .shopRecommendPart {
         margin: 0.5rem 0rem;
-        border-top: 1px dotted gray;
+        // border-top: 1px dotted gray;
         h3 {
           font-size: 1rem;
           padding: 0.2rem 1rem;
         }
         .recommendItem {
           width: 40vw;
-          height: 32vh;
+          height: 15rem;
           box-sizing: border-box;
           display: inline-block;
           box-shadow: 2px 2px 1px #888888;
@@ -729,7 +732,7 @@ export default {
         /deep/ .van-swipe__track {
           width: 2000px !important;
           .recommendSwipe {
-            height: 32vh !important;
+            height: 15rem !important;
             box-sizing: border-box;
           }
         }
@@ -763,12 +766,17 @@ export default {
         .vantCell {
           float: right;
           width: 80vw;
-          padding: 0 16px;
+          padding-right: 8px;
+          padding-left: 2px;
           padding-bottom: 3rem;
           /deep/ .van-index-anchor {
             font-size: 1rem;
             font-weight: 900;
-            color: #409EFF;
+            color: #0194FE;
+          }
+          /deep/ .van-index-anchor--sticky {
+            z-index: 99  !important;
+            height: 2.5rem !important;
           }
         }
       }
@@ -783,7 +791,7 @@ export default {
     background-color: rgba(0, 0, 0, 0.8);
     .info {
       width: 90%;
-      height: 46vh;
+      height: 19rem;
       position: absolute;
       left: 0;
       right: 0;
@@ -818,7 +826,7 @@ export default {
     background-color: rgba(0, 0, 0, 0.8);
     .info {
       width: 90%;
-      height: 60vh;
+      height: 25rem;
       overflow: scroll;
       position: absolute;
       left: 0;

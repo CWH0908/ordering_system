@@ -5,7 +5,7 @@
         <div class="itemDiv">
           <!-- 店铺头像 -->
           <aside>
-            <img :src="getPicUrl(item.pic_url)" class="itemPic" />
+            <img v-lazy="getPicUrl(item.pic_url)" class="itemPic" />
           </aside>
           <div class="rightPart">
             <!-- 店铺名 -->
@@ -55,13 +55,16 @@ export default {
   },
   methods: {
     ...mapMutations({
-      set_allShopOrderData: "set_allShopOrderData"
+      set_allShopOrderData: "set_allShopOrderData",
+       set_home_search_value: "set_home_search_value",
     }),
     getPicUrl(pic_url) {
       return "http://" + qiniuDomain + "/" + pic_url;
     },
     selectShop(item) {
       // alert("选择了店铺ID："+item.shopID)
+      //清除搜索栏的值
+      this.set_home_search_value("")
       this.$router.push({
         name: "foodList",
         params: {

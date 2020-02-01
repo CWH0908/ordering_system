@@ -1,6 +1,6 @@
 <template>
   <div class="foodItemRecommend">
-    <img :src="getPicUrl(foodItem.pic_url)" />
+    <img v-lazy="getPicUrl(foodItem.pic_url)" />
     <div class="foodData">
       <h1>{{foodItem.foodName}}</h1>
       <div>
@@ -79,7 +79,7 @@ export default {
 .foodItemRecommend {
   position: relative;
   text-align: left;
-  height: 32vh;
+  height: 15rem;
   img {
     width: 100%;
     height: 8rem;

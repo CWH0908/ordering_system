@@ -92,8 +92,8 @@ export default {
 <style lang="less" scoped>
 .shopCar {
   position: fixed;
-  bottom: -1px;
-  height: 6.5vh;
+  bottom: -3px;
+  height: 3rem;
   width: 100%;
   background-color: #2f4f4f;
   color: gray;
@@ -106,7 +106,7 @@ export default {
     font-size: 2.2rem;
   }
   .currentMoney {
-    width: 60%;
+    width: 58%;
     display: inline-block;
     padding-left: 4rem;
     line-height: 1.5;

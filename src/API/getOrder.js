@@ -1,8 +1,9 @@
 import axios from "axios"
+import {RemoteUrl} from "../API/RemoteServer"
 
 //查询当前用户的订单信息
 export function getOrder(account) {
-  return axios.post("http://localhost:8081/getOrder", {
+  return axios.post(RemoteUrl+"getOrder", {
     params: {
       account
     }
@@ -13,7 +14,7 @@ export function getOrder(account) {
 
 //保存订单信息到数据库
 export function saveOrder(orderData) {
-  return axios.post("http://localhost:8081/saveOrder", {
+  return axios.post(RemoteUrl+"saveOrder", {
     params: {
       orderData
     }
@@ -24,7 +25,7 @@ export function saveOrder(orderData) {
 
 //更新订单状态信息到数据库
 export function updateOrderState(orderItem, state) {
-  return axios.post("http://localhost:8081/updateOrderState", {
+  return axios.post(RemoteUrl+"updateOrderState", {
     params: {
       orderItem,
       state
@@ -36,7 +37,7 @@ export function updateOrderState(orderItem, state) {
 
 //更新订单评论到数据库
 export function updateOrderComment(orderItem, rateValue, comment) {
-  return axios.post("http://localhost:8081/updateOrderComment", {
+  return axios.post(RemoteUrl+"updateOrderComment", {
     params: {
       orderItem,
       rateValue,
@@ -49,7 +50,7 @@ export function updateOrderComment(orderItem, rateValue, comment) {
 
 //查询当前店铺的订单信息
 export function getShopOrder(ShopID) {
-  return axios.post("http://localhost:8081/getShopOrder", {
+  return axios.post(RemoteUrl+"getShopOrder", {
     params: {
       ShopID
     }
@@ -60,7 +61,7 @@ export function getShopOrder(ShopID) {
 
 //返回所有订单信息
 export function getAllShopOrder() {
-  return axios.post("http://localhost:8081/getAllShopOrder", {
+  return axios.post(RemoteUrl+"getAllShopOrder", {
     params: {}
   }).then(res => {
     return Promise.resolve(res.data);

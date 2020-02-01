@@ -26,16 +26,25 @@
         <!-- </van-cell-group> -->
       </div>
       <div class="address">
-        <!-- <van-cell-group> -->
-        <van-field
+        <!-- <van-field
           v-model="currentAddress"
           clearable
           type="tel"
           label="地址"
           placeholder="请输入收货地址"
           required
-        />
-        <!-- </van-cell-group> -->
+        />-->
+        <van-collapse v-model="activeNames">
+          <van-collapse-item title="选择地址" name="1" :value="currentAddress">
+            <div class="modifyAddress">
+              <van-tree-select
+                :items="items"
+                :active-id.sync="activeId"
+                :main-active-index.sync="activeIndex"
+              />
+            </div>
+          </van-collapse-item>
+        </van-collapse>
       </div>
       <van-button @click="saveButton" class="saveButton" type="danger" v-if="editType!='modify'">保存</van-button>
       <van-button
@@ -53,6 +62,14 @@
       >删除</van-button>
       <van-button @click="cancelButton" class="cancelButton" type="danger" plain>取消</van-button>
     </div>
+
+    <!-- <div class="modifyAddress">
+      <van-tree-select
+        :items="items"
+        :active-id.sync="activeId"
+        :main-active-index.sync="activeIndex"
+      />
+    </div>-->
   </div>
 </template>
 
@@ -60,6 +77,8 @@
 import { Toast, Field } from "vant";
 import { updateAddress } from "../../API/checkUser";
 import { mapMutations, mapGetters } from "vuex";
+import { addressItems } from "../../API/addressItems";
+
 export default {
   props: {
     //用于区分是哪种输入框，新增还是修改
@@ -88,11 +107,37 @@ export default {
     return {
       currentName: this.name,
       currentTel: this.tel,
-      currentAddress: this.address
+      currentAddress: this.address,
+      //折叠面板
+      activeNames: ["0"],
+      //地址选择
+      items: addressItems,
+      activeId: -1,
+      activeIndex: 0
     };
   },
+  watch: {
+    currentChooseAddress(newVal) {
+      this.currentAddress = newVal;
+    }
+  },
   computed: {
-    ...mapGetters(["currentUser"])
+    ...mapGetters(["currentUser"]),
+    currentChooseAddress() {
+      if (this.activeId != -1) {
+        let temp;
+        addressItems.forEach(addressItem => {
+          addressItem.children.forEach(data => {
+            if (data.id == this.activeId) {
+              temp = addressItem.text + data.text;
+            }
+          });
+        });
+        return temp;
+      } else {
+        return "";
+      }
+    }
   },
   methods: {
     ...mapMutations({
@@ -211,6 +256,16 @@ export default {
     }
     .address {
       border-bottom: 1px solid gray;
+
+      .modifyAddress {
+        /deep/ .van-tree-select{
+          height: 15rem !important;
+        }
+        /deep/ .van-address-list {
+          width: 18rem;
+          height: 12rem;
+        }
+      }
     }
     .saveButton {
       width: 100%;

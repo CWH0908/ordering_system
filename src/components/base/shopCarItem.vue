@@ -33,7 +33,9 @@ export default {
   },
   filters: {
     getSumPrice(shopCarFoodItem) {
-      return (shopCarFoodItem.foodCount * shopCarFoodItem.foodData.newMoney).toFixed(2);
+      return (
+        shopCarFoodItem.foodCount * shopCarFoodItem.foodData.newMoney
+      ).toFixed(2);
     }
   }
 };
@@ -46,7 +48,7 @@ export default {
   padding: 0 1rem;
   height: 3rem;
   line-height: 3rem;
-  border-top: 1px solid gray;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   .foodName {
     display: inline-block;

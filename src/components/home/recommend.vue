@@ -266,7 +266,11 @@ export default {
     padding: 1rem 0;
   }
   /deep/ .el-tabs__nav-scroll {
-    padding-left: 4rem;
+    // padding-left: 4rem;
+  }
+  /deep/ .el-tabs__nav{
+    left: 50%;
+    transform: translateX(-50%) !important;
   }
 
   //店铺板块
